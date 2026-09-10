@@ -68,19 +68,27 @@ async function handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
 
 export async function apiRequest<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  retries = 1,
 ): Promise<ApiResponse<T>> {
-  try {
-    const url = `${API_BASE}${appendToken(endpoint)}`;
-    const response = await fetch(url, {
-      ...options,
-      headers: buildHeaders(options.headers as Record<string, string>),
-    });
-    return await handleResponse<T>(response);
-  } catch (error) {
-    console.error('API Request Error:', error);
-    return { success: false, error: 'Network error. Please check your connection.' };
+  const url = `${API_BASE}${appendToken(endpoint)}`;
+  let lastError: unknown = null;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      // Mutations already carry idempotency keys, so a single retry is safe.
+      if (attempt > 0) await new Promise((r) => setTimeout(r, 600 * attempt));
+      const response = await fetch(url, {
+        ...options,
+        headers: buildHeaders(options.headers as Record<string, string>),
+      });
+      return await handleResponse<T>(response);
+    } catch (error) {
+      lastError = error;
+      console.error(`API Request Error (attempt ${attempt + 1}):`, error);
+    }
   }
+  void lastError;
+  return { success: false, error: 'Network error. Please check your connection.' };
 }
 
 // ── Auth ──────────────────────────────────────────────────────────────────
