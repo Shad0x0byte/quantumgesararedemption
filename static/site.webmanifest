@@ -1,0 +1,11 @@
+{
+  "name": "QGR Exchange — Quantum Gesara Redemption",
+  "short_name": "QGR Exchange",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B132B",
+  "theme_color": "#0B132B",
+  "icons": [
+    {"src":"/qgr-icon-1024.png","sizes":"1024x1024","type":"image/png","purpose":"any maskable"}
+  ]
+}

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">QGR Exchange mark</title>
+  <desc id="desc">A refined Q and G monogram in gold, silver and navy.</desc>
+  <defs>
+    <linearGradient id="gold" x1="45" y1="34" x2="208" y2="214" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8D66D"/>
+      <stop offset="0.48" stop-color="#D4A73A"/>
+      <stop offset="1" stop-color="#A56E12"/>
+    </linearGradient>
+    <linearGradient id="silver" x1="78" y1="104" x2="201" y2="206" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#B9C2CF"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="58" fill="#0B132B"/>
+  <circle cx="128" cy="128" r="91" fill="none" stroke="#16223F" stroke-width="10"/>
+  <path d="M185 76.5a66 66 0 1 0-11.6 82.4l30.1 30.1" fill="none" stroke="url(#gold)" stroke-width="25" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M86 113h61c18.5 0 33.5 15 33.5 33.5S165.5 180 147 180H91l31-31h33" fill="none" stroke="url(#silver)" stroke-width="21" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M180 176l28 28" stroke="#D4A73A" stroke-width="13" stroke-linecap="round"/>
+</svg>

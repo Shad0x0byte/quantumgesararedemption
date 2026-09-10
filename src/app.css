@@ -1,0 +1,198 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+@theme {
+  /* QGR brutalist Web3 system — navy ink, gold, paper, acid */
+  --color-ink:         #0b132b;
+  --color-ink-soft:    #1c2547;
+  --color-paper:       #f4f1ea;
+  --color-paper-dim:   #e9e4d6;
+  --color-gold:        #d4a73a;
+  --color-gold-deep:   #a97f22;
+  --color-acid:        #c6f135;
+  --color-blood:       #ff4d00;
+  --color-up:          #1f9d55;
+  --color-down:        #ff4d00;
+
+  --font-display: 'Space Grotesk', 'Sora', system-ui, sans-serif;
+  --font-sans:    'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Courier New', monospace;
+}
+
+* { @apply box-border; }
+
+html {
+  @apply scroll-smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  @apply bg-paper text-ink antialiased;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Space Grotesk', 'Sora', system-ui, sans-serif;
+}
+
+/* ── Typography utilities ── */
+.font-display { font-family: 'Space Grotesk', 'Sora', system-ui, sans-serif; }
+.font-body    { font-family: 'Inter', system-ui, sans-serif; }
+.font-mono    { font-family: 'JetBrains Mono', monospace; }
+
+.micro-label {
+  @apply text-[11px] font-bold uppercase tracking-[0.22em];
+}
+
+/* ── Paper grain ── */
+.paper-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── Brutal cards ── */
+.brut-card {
+  @apply border-2 border-ink bg-white;
+  box-shadow: 5px 5px 0 #0b132b;
+}
+.brut-card-paper {
+  @apply border-2 border-ink bg-paper;
+  box-shadow: 5px 5px 0 #0b132b;
+}
+.brut-card-navy {
+  @apply border-2 border-ink bg-ink text-white;
+  box-shadow: 5px 5px 0 #d4a73a;
+}
+.brut-flat {
+  @apply border-2 border-ink bg-white;
+}
+
+/* ── Brutal buttons (same class names as before — drop-in skin) ── */
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 border-2 border-ink bg-gold px-5 py-3;
+  @apply text-sm font-bold uppercase tracking-wider text-ink transition-all;
+  box-shadow: 4px 4px 0 #0b132b;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+}
+.btn-primary:hover { @apply bg-acid; }
+.btn-primary:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #0b132b; }
+.btn-primary:disabled { @apply cursor-not-allowed opacity-50; }
+.btn-primary:disabled:hover { @apply bg-gold; }
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 border-2 border-ink bg-white px-5 py-3;
+  @apply text-sm font-bold uppercase tracking-wider text-ink transition-all;
+  box-shadow: 4px 4px 0 #0b132b;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+}
+.btn-secondary:hover { @apply bg-paper-dim; }
+.btn-secondary:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #0b132b; }
+.btn-secondary:disabled { @apply cursor-not-allowed opacity-50; }
+
+.btn-acid {
+  @apply inline-flex items-center justify-center gap-2 border-2 border-ink bg-acid px-5 py-3;
+  @apply text-sm font-bold uppercase tracking-wider text-ink transition-all;
+  box-shadow: 4px 4px 0 #0b132b;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+}
+.btn-acid:hover { @apply bg-gold; }
+.btn-acid:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #0b132b; }
+.btn-acid:disabled { @apply cursor-not-allowed opacity-50; }
+
+.btn-danger {
+  @apply inline-flex items-center justify-center gap-2 border-2 border-ink bg-blood px-5 py-3;
+  @apply text-sm font-bold uppercase tracking-wider text-white transition-all;
+  box-shadow: 4px 4px 0 #0b132b;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+}
+.btn-danger:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #0b132b; }
+
+/* ── Inputs (same class name — drop-in skin) ── */
+.input-base {
+  @apply block w-full rounded-none border-2 border-ink bg-white px-4 py-3 text-sm font-medium text-ink;
+  @apply transition-all focus:outline-none;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.input-base:focus {
+  box-shadow: 3px 3px 0 #d4a73a;
+}
+
+/* ── Stickers & tags ── */
+.sticker {
+  @apply inline-block border-2 border-ink bg-acid px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-ink;
+  transform: rotate(-2deg);
+  box-shadow: 2px 2px 0 #0b132b;
+}
+.sticker-gold {
+  @apply inline-block border-2 border-ink bg-gold px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-ink;
+  box-shadow: 2px 2px 0 #0b132b;
+}
+.sticker-navy {
+  @apply inline-block border-2 border-gold bg-ink px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-gold;
+}
+.sticker-blood {
+  @apply inline-block border-2 border-ink bg-blood px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white;
+  transform: rotate(1.5deg);
+  box-shadow: 2px 2px 0 #0b132b;
+}
+.tag-mono {
+  @apply inline-block border border-ink bg-paper px-2 py-0.5 font-mono text-[11px] font-medium text-ink;
+}
+
+/* ── Ticker marquee ── */
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: tickerScroll 32s linear infinite;
+}
+.ticker-track:hover { animation-play-state: paused; }
+@keyframes tickerScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ── Brutal tables ── */
+.brut-table th {
+  @apply border-b-2 border-ink px-3 py-2 text-left text-[10px] font-bold uppercase tracking-[0.18em] text-ink;
+}
+.brut-table td {
+  @apply border-b border-ink/15 px-3 py-3 text-sm;
+}
+.brut-table tr:last-child td { border-bottom: none; }
+.brut-table tbody tr:hover { @apply bg-paper; }
+
+/* ── Animations ── */
+.fade-in { animation: fadeIn 0.3s steps(6) both; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.pulse-dot { animation: pulseDot 1.6s steps(2) infinite; }
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* ── Shimmer (square) ── */
+.shimmer {
+  background: linear-gradient(90deg, #e9e4d6 25%, #f4f1ea 50%, #e9e4d6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #f4f1ea; border-left: 2px solid #0b132b; }
+::-webkit-scrollbar-thumb { background: #0b132b; }
+::-webkit-scrollbar-thumb:hover { background: #d4a73a; }
+
+/* ── Mobile safe area ── */
+.safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 1rem); }
+.safe-top    { padding-top: env(safe-area-inset-top); }

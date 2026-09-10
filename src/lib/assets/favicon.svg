@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="QGR Exchange favicon">
+  <defs>
+    <linearGradient id="gold" x1="22" y1="18" x2="104" y2="106" gradientUnits="userSpaceOnUse"><stop stop-color="#F8D66D"/><stop offset=".5" stop-color="#D4A73A"/><stop offset="1" stop-color="#A56E12"/></linearGradient>
+    <linearGradient id="silver" x1="42" y1="49" x2="99" y2="95" gradientUnits="userSpaceOnUse"><stop stop-color="#FFFFFF"/><stop offset="1" stop-color="#B9C2CF"/></linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="#0B132B"/>
+  <circle cx="64" cy="64" r="47" fill="none" stroke="#16223F" stroke-width="5"/>
+  <path d="M92 38a34 34 0 1 0-5.8 42l15 15" fill="none" stroke="url(#gold)" stroke-width="12" stroke-linecap="round"/>
+  <path d="M43 56h29a15 15 0 1 1 0 30H45l15-15h16" fill="none" stroke="url(#silver)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M90 82l15 15" stroke="#D4A73A" stroke-width="6" stroke-linecap="round"/>
+</svg>
