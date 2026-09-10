@@ -313,6 +313,9 @@ export const getAdminCryptoWallets = (search?: string, userId?: number) => {
 export const adminCryptoBalance = (data: { user_id: number; asset: string; network?: string; mode: 'set' | 'add' | 'remove'; amount: number; note: string }) =>
   apiRequest('/crypto/admin_balance.php', { method: 'POST', body: JSON.stringify(data) });
 
+export const adminCryptoCreditUsd = (data: { user_id: number; asset: string; network?: string; usd_amount: number; note: string }) =>
+  apiRequest('/crypto/admin_credit_usd.php', { method: 'POST', body: JSON.stringify({ ...data, idempotency_key: idempotencyKey() }) });
+
 export const adminCryptoTxUpdate = (tx_id: number, action: 'approve' | 'fail' | 'cancel', note?: string) =>
   apiRequest('/crypto/admin_tx_update.php', { method: 'POST', body: JSON.stringify({ tx_id, action, note }) });
 

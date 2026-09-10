@@ -1,640 +1,458 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
-	import { toast } from '$lib/stores/toast';
-	import { formatCurrency, formatDate } from '$lib/utils/formatters';
-	import { apiRequest } from '$lib/api/client';
-	import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
+  import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
+  import { onMount } from 'svelte';
+  import { toast } from '$lib/stores/toast';
+  import { formatUsd, formatCrypto } from '$lib/crypto/demo';
+  import { formatDate } from '$lib/utils/formatters';
+  import {
+    getAdminUserDetail,
+    updateUser,
+    deleteUser,
+    getAdminCryptoAssets,
+    getAdminCryptoTransactions,
+    adminCryptoCreditUsd,
+    adminCryptoBalance,
+    adminCryptoTxUpdate,
+  } from '$lib/api/client';
+  import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 
-	$: userId = $page.params.id ? parseInt($page.params.id) : 0;
+  $: userId = $page.params.id ? parseInt($page.params.id) : 0;
 
-	// ── State ──────────────────────────────────────────────────────────────
-	let loading = true;
-	let user: any = null;
-	let accounts: any[] = [];
-	let transactions: any[] = [];
-	let stats: any = null;
+  let loading = true;
+  let user: any = null;
+  let wallets: any[] = [];
+  let transactions: any[] = [];
+  let portfolioTotal = 0;
+  let change24h = 0;
+  let priceMeta: any = null;
+  let assetPrices: Record<string, number> = {};
+  let assetNetworks: Record<string, string> = {};
 
-	// Balance panel
-	let showBalancePanel = false;
-	let selectedAccountId = '';
-	let balanceMode: 'set' | 'adjust' = 'adjust';
-	let balanceAmount = '';
-	let balanceDescription = '';
-	let balanceType = 'deposit';
-	let balanceSenderName = '';
-	let balanceDate = new Date().toISOString().split('T')[0];
-	let savingBalance = false;
+  // FUND by USD panel
+  let showFund = false;
+  let fAsset = 'BTC';
+  let fUsd: number = 100;
+  let fNote = '';
+  let funding = false;
 
-	// Transfer panel (alias for balance panel in "deposit" mode — same endpoint)
-	let showTransferPanel = false;
-	let txAccountId = '';
-	let txAmount = '';
-	let txDescription = '';
-	let txType = 'deposit';
-	let txSenderName = '';
-	let txDate = new Date().toISOString().split('T')[0];
-	let savingTx = false;
+  // ADJUST by crypto panel
+  let showAdjust = false;
+  let aWalletId = '';
+  let aMode: 'set' | 'add' | 'remove' = 'add';
+  let aAmount: number = 0;
+  let aNote = '';
+  let adjusting = false;
 
-	// Picture upload
-	let showPictureUpload = false;
-	let pictureFile: File | null = null;
-	let picturePreview: string | null = null;
-	let uploadingPicture = false;
+  // Edit profile
+  let showEdit = false;
+  let eStatus = 'active';
+  let eRole = 'user';
+  let eVerified = true;
+  let savingEdit = false;
 
-	function handlePictureFileChange(e: Event) {
-		const input = e.target as HTMLInputElement;
-		if (input.files && input.files[0]) {
-			const file = input.files[0];
-			if (file.size > 3 * 1024 * 1024) { toast.error('Photo must be under 3MB'); return; }
-			pictureFile = file;
-			const reader = new FileReader();
-			reader.onload = (ev) => { picturePreview = ev.target?.result as string; };
-			reader.readAsDataURL(file);
-		}
-	}
+  async function loadAll() {
+    loading = true;
+    const [detail, assets] = await Promise.all([getAdminUserDetail(userId), getAdminCryptoAssets()]);
+    loading = false;
+    const d = detail.data as any;
+    if (!detail.success || !d) {
+      toast.error(detail.error || 'Failed to load holder');
+      return;
+    }
+    user = d.user;
+    wallets = d.wallets ?? [];
+    transactions = d.crypto_transactions ?? [];
+    portfolioTotal = Number(d.portfolio_total_usd ?? 0);
+    change24h = Number(d.change_24h_pct ?? 0);
+    priceMeta = d.price_meta ?? null;
+    eStatus = user.status;
+    eRole = user.role;
+    eVerified = !!user.verified;
+    const ad = assets.data as any;
+    if (assets.success && ad?.assets) {
+      for (const a of ad.assets) {
+        if (a.status !== 'active') continue;
+        const key = assetPrices[a.symbol] === undefined ? a.symbol : `${a.symbol}@${a.network_symbol}`;
+        assetPrices[key] = Number(a.price_usd);
+        assetNetworks[key] = a.network_symbol;
+      }
+      if (!assetPrices[fAsset] && Object.keys(assetPrices).length) fAsset = Object.keys(assetPrices)[0];
+    }
+  }
 
-	async function handlePictureUpload() {
-		if (!pictureFile) { toast.error('Select a photo first'); return; }
-		uploadingPicture = true;
-		const fd = new FormData();
-		fd.append('picture', pictureFile);
-		fd.append('user_id', String(userId));
-		try {
-			const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8002/api';
-			const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-			// Append token as query param — nginx strips Authorization header
-			const url = token
-				? `${API_BASE}/user/upload_picture.php?_token=${encodeURIComponent(token)}`
-				: `${API_BASE}/user/upload_picture.php`;
-			const resp = await fetch(url, { method: 'POST', body: fd });
-			const data = await resp.json();
-			if (data.success) {
-				toast.success('Profile picture updated');
-				showPictureUpload = false;
-				pictureFile = null; picturePreview = null;
-				await loadUser();
-			} else {
-				toast.error(data.error || 'Upload failed');
-			}
-		} catch (e) {
-			toast.error('Network error');
-		} finally {
-			uploadingPicture = false;
-		}
-	}
+  onMount(loadAll);
 
-	// ── Load ───────────────────────────────────────────────────────────────
-	onMount(async () => {
-		await loadUser();
-	});
+  $: fundPrice = assetPrices[fAsset] ?? 0;
+  $: fundCrypto = fundPrice > 0 && fUsd > 0 ? fUsd / fundPrice : 0;
+  $: activeWallet = wallets.find((w) => String(w.id) === aWalletId);
+  $: pendingTx = transactions.filter((t) => t.status === 'pending' || t.status === 'processing');
 
-	async function loadUser() {
-		loading = true;
-		const res = await apiRequest<any>(`/admin/user_detail.php?user_id=${userId}`);
-		loading = false;
-		if (res.success && res.data) {
-			user         = res.data.user;
-			accounts     = res.data.accounts;
-			transactions = res.data.transactions;
-			stats        = res.data.stats;
-			if (accounts.length) {
-				selectedAccountId = String(accounts[0].id);
-				txAccountId       = String(accounts[0].id);
-			}
-		} else {
-			toast.error(res.error || 'Failed to load user');
-		}
-	}
+  async function doFund() {
+    if (!fUsd || fUsd <= 0) {
+      toast.error('Enter a positive USD amount');
+      return;
+    }
+    if (!fNote.trim()) {
+      toast.error('An ops note is required for audit');
+      return;
+    }
+    funding = true;
+    const res = await adminCryptoCreditUsd({ user_id: userId, asset: fAsset.split('@')[0], usd_amount: fUsd, note: fNote.trim() });
+    const d = res.data as any;
+    funding = false;
+    if (res.success) {
+      toast.success(`Funded ${formatCrypto(d.crypto_amount, d.symbol)} ($${d.usd_amount})`);
+      showFund = false;
+      fUsd = 100;
+      fNote = '';
+      await loadAll();
+    } else toast.error(res.error || 'Funding failed');
+  }
 
-	// ── Balance adjust ─────────────────────────────────────────────────────
-	async function handleBalanceSave() {
-		if (!selectedAccountId) { toast.error('Select an account'); return; }
-		const amt = parseFloat(balanceAmount);
-		if (isNaN(amt) || amt === 0) { toast.error('Enter a valid amount'); return; }
-		if (!balanceDescription.trim()) { toast.error('Description is required'); return; }
+  async function doAdjust() {
+    if (!activeWallet) {
+      toast.error('Pick a vault first');
+      return;
+    }
+    if (aMode !== 'set' && (!aAmount || aAmount <= 0)) {
+      toast.error('Enter a positive amount');
+      return;
+    }
+    if (aMode === 'set' && (aAmount === null || aAmount === undefined || aAmount < 0)) {
+      toast.error('Enter the target balance');
+      return;
+    }
+    if (!aNote.trim()) {
+      toast.error('An ops note is required for audit');
+      return;
+    }
+    adjusting = true;
+    const res = await adminCryptoBalance({
+      user_id: userId,
+      asset: activeWallet.symbol,
+      network: activeWallet.network_symbol,
+      mode: aMode,
+      amount: Number(aAmount),
+      note: aNote.trim(),
+    });
+    const d = res.data as any;
+    adjusting = false;
+    if (res.success) {
+      toast.success(`${d.symbol}: ${d.old_balance} → ${d.new_balance}`);
+      showAdjust = false;
+      aAmount = 0;
+      aNote = '';
+      await loadAll();
+    } else toast.error(res.error || 'Adjustment failed');
+  }
 
-		savingBalance = true;
-		const res = await apiRequest<any>('/admin/balance_adjust.php', {
-			method: 'POST',
-			body: JSON.stringify({
-				account_id:  parseInt(selectedAccountId),
-				mode:        balanceMode,
-				amount:      amt,
-				description: balanceDescription,
-				type:        balanceType,
-				sender_name: balanceSenderName,
-				date:        balanceDate,
-			}),
-		});
-		savingBalance = false;
+  async function reviewTx(tx: any, action: 'approve' | 'fail' | 'cancel') {
+    const res = await adminCryptoTxUpdate(tx.db_id, action, `ops review on holder page`);
+    const d = res.data as any;
+    if (res.success) {
+      toast.success(`TX ${d.new_status}`);
+      await loadAll();
+    } else toast.error(res.error || 'Update failed');
+  }
 
-		if (res.success) {
-			toast.success(`Balance updated → ${formatCurrency(res.data.new_balance)}`);
-			showBalancePanel = false;
-			balanceAmount = ''; balanceDescription = ''; balanceSenderName = '';
-			await loadUser();
-		} else {
-			toast.error(res.error || 'Failed to update balance');
-		}
-	}
+  async function toggleStatus() {
+    const newStatus = user.status === 'active' ? 'suspended' : 'active';
+    const action = newStatus === 'suspended' ? 'SUSPEND — trading blocked server-side' : 'UNSUSPEND — trading restored';
+    if (newStatus === 'suspended' && !confirm(`${user.email} will be locked out of sends, swaps, buys and sells. Continue?`)) return;
+    const res = await updateUser(userId, { status: newStatus });
+    if (res.success) {
+      user.status = newStatus;
+      toast.success(action);
+    } else toast.error('Failed to update status');
+  }
 
-	// ── Admin transfer ─────────────────────────────────────────────────────
-	async function handleTransferSave() {
-		if (!txAccountId) { toast.error('Select an account'); return; }
-		const amt = parseFloat(txAmount);
-		if (isNaN(amt) || amt <= 0) { toast.error('Enter a valid amount'); return; }
-		if (!txDescription.trim()) { toast.error('Description is required'); return; }
+  async function saveEdit() {
+    savingEdit = true;
+    const res = await updateUser(userId, { status: eStatus, role: eRole, verified: eVerified });
+    savingEdit = false;
+    if (res.success) {
+      user.status = eStatus;
+      user.role = eRole;
+      user.verified = eVerified;
+      showEdit = false;
+      toast.success('Holder updated');
+    } else toast.error('Update failed');
+  }
 
-		savingTx = true;
-		const res = await apiRequest<any>('/admin/balance_adjust.php', {
-			method: 'POST',
-			body: JSON.stringify({
-				account_id:  parseInt(txAccountId),
-				mode:        'adjust',
-				amount:      amt,         // always positive — credit
-				description: txDescription,
-				type:        txType,
-				sender_name: txSenderName,
-				date:        txDate,
-			}),
-		});
-		savingTx = false;
+  async function removeUser() {
+    if (!confirm(`Nuke ${user.email}? Wallets, ledger and audit stay; the login dies. Irreversible.`)) return;
+    const res = await deleteUser(userId);
+    if (res.success) {
+      toast.success('Holder deleted');
+      goto('/admin/users');
+    } else toast.error(res.error || 'Delete failed');
+  }
 
-		if (res.success) {
-			toast.success(`Transaction posted — new balance ${formatCurrency(res.data.new_balance)}`);
-			showTransferPanel = false;
-			txAmount = ''; txDescription = ''; txSenderName = '';
-			await loadUser();
-		} else {
-			toast.error(res.error || 'Failed to post transaction');
-		}
-	}
+  function statusTag(s: string) {
+    return s === 'active'
+      ? 'border-ink bg-acid text-ink'
+      : s === 'suspended'
+        ? 'border-ink bg-blood text-white'
+        : 'border-ink bg-gold text-ink';
+  }
 
-	// ── Helpers ────────────────────────────────────────────────────────────
-	function getStatusColor(s: string) {
-		return s === 'active'    ? 'bg-paper-dim text-gold-deep'
-		     : s === 'pending'   ? 'bg-amber-100 text-amber-700'
-		     : s === 'flagged'   ? 'bg-red-100 text-red-700'
-		     : 'bg-slate-100 text-slate-700';
-	}
-
-	$: selectedAccount = accounts.find(a => String(a.id) === selectedAccountId);
-	$: totalBalance    = accounts.reduce((s, a) => s + a.balance, 0);
+  const glyph = (t: any) =>
+    t.type === 'received' ? '↓' : t.type === 'sent' ? '↑' : t.type === 'swap' ? '⇄' : t.type === 'buy' ? '+' : t.type === 'sell' ? '−' : '•';
 </script>
 
-<svelte:head>
-	<title>User #{userId} - QGR Exchange Admin</title>
-</svelte:head>
+<svelte:head><title>Holder #{userId} — QGR Control Room</title></svelte:head>
 
 {#if loading}
-	<div class="flex items-center justify-center py-24">
-		<LoadingSpinner size="lg" />
-	</div>
-
+  <div class="flex items-center justify-center py-24"><LoadingSpinner size="lg" /></div>
 {:else if !user}
-	<div class="text-center py-24">
-		<p class="text-slate-500">User not found.</p>
-		<a href="/admin/users" class="mt-4 inline-block text-gold hover:underline">← Back to Users</a>
-	</div>
-
+  <div class="py-24 text-center">
+    <p class="font-display text-xl font-bold">HOLDER NOT FOUND.</p>
+    <a href="/admin/users" class="mt-4 inline-block font-display text-sm font-bold underline decoration-gold decoration-2 underline-offset-4">← BACK TO HOLDERS</a>
+  </div>
 {:else}
-<div>
-	<!-- Header -->
-	<div class="mb-8 flex items-start justify-between">
-		<div>
-			<a href="/admin/users" class="text-sm text-slate-500 hover:text-slate-700 hover:underline">← Back to Users</a>
-			<h1 class="mt-2 text-3xl font-bold text-slate-900">{user.first_name} {user.last_name}</h1>
-			<p class="mt-1 text-slate-500">User ID: {user.id} · {user.email}</p>
-		</div>
-		<span class="mt-3 inline-flex items-center  px-3 py-1 text-sm font-semibold capitalize {getStatusColor(user.status)}">
-			{user.status}
-		</span>
-	</div>
+  <div class="space-y-6">
+    <!-- HEADER -->
+    <div>
+      <a href="/admin/users" class="font-mono text-xs text-ink/50 hover:bg-acid">← ALL HOLDERS</a>
+      <div class="mt-2 flex flex-wrap items-center gap-3">
+        <h1 class="font-display text-3xl font-bold tracking-tight">{user.first_name} {user.last_name}</h1>
+        <span class="border-2 px-2 py-1 font-display text-[11px] font-bold tracking-widest uppercase {statusTag(user.status)}">{user.status}</span>
+        <span class="tag-mono">#{user.id} · {user.role.toUpperCase()}</span>
+      </div>
+      <p class="mt-1 font-mono text-xs text-ink/50">{user.email} · {user.phone || 'no phone'} · since {formatDate(user.created_at)}</p>
+    </div>
 
-	<div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
-		<!-- ── Left column ──────────────────────────────────────────── -->
-		<div class="space-y-8 lg:col-span-2">
+    <!-- PORTFOLIO HERO -->
+    <section class="brut-card-navy p-6">
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p class="micro-label text-gold">HOLDER STACK</p>
+          <p class="font-display mt-2 text-4xl font-bold sm:text-5xl">{formatUsd(portfolioTotal)}</p>
+          <p class="mt-1 font-mono text-sm font-bold {change24h >= 0 ? 'text-acid' : 'text-blood'}">
+            {change24h >= 0 ? '▲' : '▼'} {Math.abs(change24h).toFixed(2)}% / 24H
+            {#if priceMeta}<span class="ml-2 font-normal text-white/50">· {priceMeta.mode === 'live' ? '● LIVE' : `CACHED ${priceMeta.age_seconds ?? '?'}S`}</span>{/if}
+          </p>
+        </div>
+        <div class="flex flex-col gap-2">
+          <button class="btn-acid !px-4 !py-2 !text-xs" onclick={() => ((showFund = !showFund), (showAdjust = false))}>$ FUND BY USD</button>
+          <button class="btn-primary !px-4 !py-2 !text-xs" onclick={() => ((showAdjust = !showAdjust), (showFund = false))}>⇄ ADJUST CRYPTO</button>
+          <button class="btn-secondary !px-4 !py-2 !text-xs !border-gold !bg-transparent !text-gold" onclick={loadAll}>↻ REFRESH</button>
+        </div>
+      </div>
+    </section>
 
-			<!-- Profile -->
-			<div class=" border border-slate-200 bg-white shadow-sm overflow-hidden">
-				<div class="border-b border-slate-200 p-6">
-					<h3 class="text-lg font-bold text-slate-900">Profile</h3>
-				</div>
-				<div class="p-6">
-				<!-- Profile photo -->
-				<div class="flex items-center gap-4 mb-6">
-					{#if user.profile_picture_url}
-						<img src={user.profile_picture_url} alt="Profile" class="w-20 h-20  object-cover ring-2 ring-slate-200" />
-					{:else}
-						<div class="w-20 h-20  bg-gradient-to-br from-gold to-gold flex items-center justify-center text-2xl font-bold text-white">
-							{user.first_name?.[0]}{user.last_name?.[0]}
-						</div>
-					{/if}
-					<div>
-						<p class="font-bold text-slate-900">{user.first_name} {user.last_name}</p>
-						<p class="text-sm text-slate-500">{user.email}</p>
-						<button onclick={() => showPictureUpload = !showPictureUpload} class="mt-2 text-xs text-gold hover:underline font-medium">📷 Change photo</button>
-					</div>
-				</div>
-				{#if showPictureUpload}
-				<div class="mb-6  border border-emerald-200 bg-paper p-4 space-y-3">
-					<p class="text-sm font-semibold text-emerald-900">Upload new profile photo</p>
-					<div class="flex items-center gap-4">
-						{#if picturePreview}
-							<img src={picturePreview} alt="Preview" class="w-16 h-16  object-cover ring-2 ring-emerald-300" />
-						{/if}
-						<label class="cursor-pointer inline-flex items-center gap-2 px-4 py-2  bg-gold text-white text-sm font-semibold hover:bg-gold-deep">
-							Choose Photo
-							<input type="file" accept="image/*" onchange={handlePictureFileChange} class="hidden" />
-						</label>
-					</div>
-					<div class="flex gap-2">
-						<button onclick={handlePictureUpload} disabled={!pictureFile || uploadingPicture} class="px-4 py-2  bg-gold text-white text-sm font-semibold disabled:opacity-50">
-							{uploadingPicture ? 'Uploading...' : 'Upload'}
-						</button>
-						<button onclick={() => { showPictureUpload = false; pictureFile = null; picturePreview = null; }} class="px-4 py-2  border border-slate-200 text-sm text-slate-600">Cancel</button>
-					</div>
-				</div>
-				{/if}
-			</div>
-			<div class="px-6 pb-6 grid grid-cols-2 gap-5 text-sm">
-					<div><p class="text-slate-500 mb-1">Email</p><p class="font-semibold text-slate-900">{user.email}</p></div>
-					<div><p class="text-slate-500 mb-1">Phone</p><p class="font-semibold text-slate-900">{user.phone || '—'}</p></div>
-					<div><p class="text-slate-500 mb-1">Date of Birth</p><p class="font-semibold text-slate-900">{user.date_of_birth || '—'}</p></div>
-					<div><p class="text-slate-500 mb-1">SSN (Last 4)</p><p class="font-semibold text-slate-900">{user.ssn_last_4 ? '****' + user.ssn_last_4 : '—'}</p></div>
-					<div class="col-span-2"><p class="text-slate-500 mb-1">Address</p>
-						<p class="font-semibold text-slate-900">
-							{#if user.address_street}{user.address_street}, {user.address_city}, {user.address_state} {user.address_zip}{:else}—{/if}
-						</p>
-					</div>
-					<div><p class="text-slate-500 mb-1">Member Since</p><p class="font-semibold text-slate-900">{formatDate(user.created_at)}</p></div>
-					<div><p class="text-slate-500 mb-1">Last Login</p><p class="font-semibold text-slate-900">{user.last_login ? formatDate(user.last_login) : 'Never'}</p></div>
-				</div>
-			</div>
+    <!-- FUND BY USD -->
+    {#if showFund}
+      <section class="brut-card border-acid bg-white p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-display text-lg font-bold">FUND VAULT BY USD VALUE</h2>
+            <p class="mt-0.5 font-mono text-xs text-ink/50">YOU TYPE DOLLARS · COINGECKO DOES THE MATH · NO FEE</p>
+          </div>
+          <button class="border-2 border-ink bg-paper px-2 font-bold hover:bg-blood hover:text-white" onclick={() => (showFund = false)}>✕</button>
+        </div>
+        <div class="mt-4 grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="micro-label" for="fund-asset">ASSET</label>
+            <select id="fund-asset" bind:value={fAsset} class="input-base mt-1 font-mono font-bold">
+              {#each Object.keys(assetPrices) as sym}<option value={sym}>{sym}{assetNetworks[sym] ? ` · ${assetNetworks[sym]}` : ''}</option>{/each}
+            </select>
+            <p class="mt-1 font-mono text-[11px] text-ink/50">LIVE @ {fundPrice ? formatUsd(fundPrice, fundPrice < 10 ? 4 : 2) : '—'}</p>
+          </div>
+          <div>
+            <label class="micro-label" for="fund-usd">USD VALUE *</label>
+            <input id="fund-usd" type="number" min="0" step="any" bind:value={fUsd} class="input-base mt-1 font-mono" placeholder="100.00" />
+          </div>
+        </div>
+        <div class="mt-4 border-2 border-ink bg-paper p-4 font-mono text-sm">
+          <div class="flex justify-between"><span class="text-ink/50">THEY RECEIVE ≈</span><span class="font-display text-xl font-bold">{fundCrypto ? formatCrypto(fundCrypto, fAsset.split('@')[0]) : '—'}</span></div>
+          <div class="mt-1 flex justify-between text-xs"><span class="text-ink/50">RATE SOURCE</span><span class="font-bold">COINGECKO LIVE · FEE $0.00</span></div>
+        </div>
+        <div class="mt-4">
+          <label class="micro-label" for="fund-note">OPS NOTE (AUDIT) *</label>
+          <input id="fund-note" bind:value={fNote} class="input-base mt-1 font-mono" placeholder="e.g. manual top-up per ticket #123" />
+        </div>
+        <button class="btn-acid mt-4 w-full" onclick={doFund} disabled={funding}>{funding ? 'POSTING…' : `⚡ POST ${fundCrypto ? formatCrypto(fundCrypto, fAsset.split('@')[0]) : ''}`}</button>
+      </section>
+    {/if}
 
-			<!-- Accounts -->
-			<div class=" border border-slate-200 bg-white shadow-sm overflow-hidden">
-				<div class="border-b border-slate-200 p-6">
-					<h3 class="text-lg font-bold text-slate-900">Accounts</h3>
-				</div>
-				<div class="divide-y divide-slate-100">
-					{#each accounts as acc}
-						<div class="flex items-center justify-between px-6 py-4">
-							<div>
-								<p class="font-semibold text-slate-900 capitalize">{acc.nickname || acc.account_type}</p>
-								<p class="text-xs text-slate-500 font-mono mt-0.5">{acc.account_number}</p>
-							</div>
-							<div class="text-right">
-								<p class="text-xl font-bold text-slate-900">{formatCurrency(acc.balance)}</p>
-								<span class="text-xs {acc.status === 'active' ? 'text-gold' : 'text-red-500'} font-medium capitalize">{acc.status}</span>
-							</div>
-						</div>
-					{/each}
-					{#if accounts.length === 0}
-						<p class="px-6 py-4 text-sm text-slate-500">No accounts found.</p>
-					{/if}
-				</div>
-			</div>
+    <!-- ADJUST BY CRYPTO -->
+    {#if showAdjust}
+      <section class="brut-card bg-white p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-display text-lg font-bold">ADJUST VAULT (CRYPTO UNITS)</h2>
+            <p class="mt-0.5 font-mono text-xs text-ink/50">SET EXACT / ADD / REMOVE · EVERYTHING AUDITED</p>
+          </div>
+          <button class="border-2 border-ink bg-paper px-2 font-bold hover:bg-blood hover:text-white" onclick={() => (showAdjust = false)}>✕</button>
+        </div>
+        {#if !wallets.length}
+          <p class="mt-4 border-2 border-dashed border-ink/30 p-6 text-center font-mono text-xs text-ink/50">NO VAULTS YET — FUND BY USD ABOVE TO MINT THE FIRST ONE.</p>
+        {:else}
+          <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <div>
+              <label class="micro-label" for="adj-wallet">VAULT</label>
+              <select id="adj-wallet" bind:value={aWalletId} class="input-base mt-1 font-mono font-bold">
+                <option value="">— pick —</option>
+                {#each wallets as w}<option value={String(w.id)}>{w.symbol} · {formatCrypto(w.balance, w.symbol)} ({formatUsd(w.value_usd)})</option>{/each}
+              </select>
+              {#if activeWallet}<p class="mt-1 font-mono text-[11px] text-ink/50">CURRENT {formatCrypto(activeWallet.balance, activeWallet.symbol)} · {activeWallet.network}</p>{/if}
+            </div>
+            <div>
+              <label class="micro-label" for="adj-mode">MODE</label>
+              <select id="adj-mode" bind:value={aMode} class="input-base mt-1 font-mono font-bold">
+                <option value="add">ADD</option>
+                <option value="remove">REMOVE</option>
+                <option value="set">SET EXACT</option>
+              </select>
+            </div>
+            <div>
+              <label class="micro-label" for="adj-amt">AMOUNT ({aMode === 'set' ? 'TARGET' : 'DELTA'}) *</label>
+              <input id="adj-amt" type="number" min="0" step="any" bind:value={aAmount} class="input-base mt-1 font-mono" />
+            </div>
+            <div>
+              <label class="micro-label" for="adj-note">OPS NOTE (AUDIT) *</label>
+              <input id="adj-note" bind:value={aNote} class="input-base mt-1 font-mono" placeholder="e.g. correction" />
+            </div>
+          </div>
+          <button class="btn-primary mt-4 w-full" onclick={doAdjust} disabled={adjusting}>{adjusting ? 'COMMITTING…' : '⚡ COMMIT ADJUSTMENT'}</button>
+        {/if}
+      </section>
+    {/if}
 
-			<!-- ── Balance Adjust Panel ───────────────────────────── -->
-			{#if showBalancePanel}
-			<div class=" border-2 border-emerald-300 bg-paper shadow-sm overflow-hidden">
-				<div class="border-b border-emerald-200 bg-paper-dim px-6 py-4 flex items-center justify-between">
-					<h3 class="font-bold text-emerald-900">💰 Edit Balance</h3>
-					<button onclick={() => showBalancePanel = false} class="text-gold hover:text-emerald-800 text-xl font-bold">×</button>
-				</div>
-				<div class="p-6 space-y-4">
-					<!-- Account selector -->
-					<div>
-						<label class="block text-sm font-medium text-slate-700 mb-1">Account</label>
-						<select bind:value={selectedAccountId} class="block w-full  border border-slate-200 py-2.5 px-4 text-sm">
-							{#each accounts as acc}
-								<option value={String(acc.id)}>{acc.nickname || acc.account_type} — {formatCurrency(acc.balance)}</option>
-							{/each}
-						</select>
-						{#if selectedAccount}
-							<p class="mt-1 text-xs text-slate-500">Current balance: <strong>{formatCurrency(selectedAccount.balance)}</strong></p>
-						{/if}
-					</div>
+    <!-- VAULTS -->
+    <section class="brut-card bg-white p-5 sm:p-6">
+      <h2 class="font-display text-lg font-bold">VAULTS <span class="font-mono text-xs font-normal text-ink/50">({wallets.length})</span></h2>
+      {#if !wallets.length}
+        <p class="mt-3 border-2 border-dashed border-ink/30 p-6 text-center font-mono text-xs text-ink/50">EMPTY — FUND THIS HOLDER TO OPEN VAULTS.</p>
+      {:else}
+        <div class="mt-4 grid gap-4 md:grid-cols-2">
+          {#each wallets as w}
+            <div class="brut-flat p-4">
+              <div class="flex items-start justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="flex h-10 w-10 items-center justify-center border-2 border-ink bg-gold font-display font-bold">{w.icon}</div>
+                  <div>
+                    <p class="font-display text-sm font-bold">{w.symbol}</p>
+                    <p class="font-mono text-[11px] text-ink/50">{w.network}</p>
+                  </div>
+                </div>
+                <span class="tag-mono">{w.status.toUpperCase()}</span>
+              </div>
+              <p class="font-display mt-3 text-xl font-bold">{formatCrypto(w.balance, w.symbol)}</p>
+              <p class="font-mono text-xs font-bold">{formatUsd(w.value_usd)} · SPENDABLE {formatCrypto(w.available_balance ?? w.balance, w.symbol)}</p>
+              {#if (w.locked_balance ?? 0) > 0}<p class="font-mono text-[11px] text-blood">LOCKED {formatCrypto(w.locked_balance, w.symbol)}</p>{/if}
+              <p class="mt-2 border border-ink/20 bg-paper p-2 font-mono text-[11px] break-all">{w.address}</p>
+            </div>
+          {/each}
+        </div>
+      {/if}
+    </section>
 
-					<!-- Mode toggle -->
-					<div>
-						<label class="block text-sm font-medium text-slate-700 mb-2">Mode</label>
-						<div class="flex gap-3">
-							<button type="button" onclick={() => balanceMode = 'set'}
-								class="flex-1 py-2.5  border text-sm font-medium transition-colors {balanceMode === 'set' ? 'border-gold bg-gold text-white' : 'border-slate-200 text-slate-600 hover:border-slate-300'}">
-								Set to exact amount
-							</button>
-							<button type="button" onclick={() => balanceMode = 'adjust'}
-								class="flex-1 py-2.5  border text-sm font-medium transition-colors {balanceMode === 'adjust' ? 'border-gold bg-gold text-white' : 'border-slate-200 text-slate-600 hover:border-slate-300'}">
-								Add / subtract
-							</button>
-						</div>
-					</div>
+    <!-- PENDING REVIEW -->
+    {#if pendingTx.length}
+      <section class="brut-card border-blood bg-white p-5 sm:p-6">
+        <h2 class="font-display text-lg font-bold">⚠ AWAITING OPS ({pendingTx.length})</h2>
+        <div class="mt-4 space-y-2">
+          {#each pendingTx as tx}
+            <div class="flex flex-col gap-3 border-2 border-ink bg-gold/20 p-4 sm:flex-row sm:items-center">
+              <div class="min-w-0 flex-1">
+                <p class="font-display text-sm font-bold">{tx.id} · {tx.type.toUpperCase()} {formatCrypto(tx.amount, tx.symbol)}</p>
+                <p class="truncate font-mono text-xs text-ink/60">{tx.network} · {tx.description}</p>
+              </div>
+              <div class="flex gap-2">
+                <button class="border-2 border-ink bg-acid px-3 py-2 font-display text-xs font-bold hover:bg-gold" onclick={() => reviewTx(tx, 'approve')}>APPROVE</button>
+                <button class="border-2 border-ink bg-white px-3 py-2 font-display text-xs font-bold text-blood hover:bg-blood hover:text-white" onclick={() => reviewTx(tx, 'fail')}>FAIL</button>
+                <button class="border-2 border-ink bg-white px-3 py-2 font-display text-xs font-bold hover:bg-paper-dim" onclick={() => reviewTx(tx, 'cancel')}>CANCEL</button>
+              </div>
+            </div>
+          {/each}
+        </div>
+      </section>
+    {/if}
 
-					<!-- Amount -->
-					<div>
-						<label class="block text-sm font-medium text-slate-700 mb-1">
-							{balanceMode === 'set' ? 'New Balance' : 'Amount (use − for debit, e.g. −50)'}
-						</label>
-						<div class="relative">
-							<span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-medium">$</span>
-							<input type="number" bind:value={balanceAmount} step="0.01"
-								class="block w-full  border border-slate-200 py-3 pl-8 pr-4 text-sm"
-								placeholder={balanceMode === 'set' ? '1000.00' : '+500 or -50'} />
-						</div>
-						{#if balanceMode === 'set' && selectedAccount && balanceAmount}
-							<p class="mt-1 text-xs text-slate-500">
-								Change: {parseFloat(balanceAmount) - selectedAccount.balance >= 0 ? '+' : ''}{formatCurrency(parseFloat(balanceAmount) - selectedAccount.balance)}
-							</p>
-						{/if}
-					</div>
+    <!-- ACTIVITY -->
+    <section class="brut-card overflow-hidden bg-white">
+      <div class="flex items-center justify-between border-b-2 border-ink px-5 py-4">
+        <h2 class="font-display text-lg font-bold">ONCHAIN ACTIVITY</h2>
+        <span class="font-mono text-xs text-ink/50">LAST {transactions.length}</span>
+      </div>
+      {#if !transactions.length}
+        <p class="p-8 text-center font-mono text-xs text-ink/50">SILENT — NO MOVEMENTS YET.</p>
+      {:else}
+        <div class="overflow-x-auto">
+          <table class="brut-table w-full min-w-[680px]">
+            <thead><tr><th>MOVE</th><th>TYPE</th><th>WHEN</th><th class="text-right">AMOUNT</th><th class="text-right">VALUE</th><th>STATUS</th></tr></thead>
+            <tbody class="font-mono text-xs">
+              {#each transactions as tx}
+                <tr>
+                  <td><p class="font-display text-[13px] font-bold">{tx.description}</p><p class="text-ink/50">{tx.network}{tx.tx_hash ? ` · ${tx.tx_hash.slice(0, 10)}…` : ''}</p></td>
+                  <td><span class="tag-mono">{tx.type.toUpperCase()}</span></td>
+                  <td class="text-ink/50">{formatDate(tx.created_at)}</td>
+                  <td class="text-right font-bold {tx.amount >= 0 ? 'text-up' : ''}">{tx.amount >= 0 ? '+' : ''}{formatCrypto(tx.amount, tx.symbol)}</td>
+                  <td class="text-right">{formatUsd(tx.value_usd ?? 0)}</td>
+                  <td><span class="tag-mono">{tx.status.toUpperCase()}</span></td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
+      {/if}
+    </section>
 
-					<div class="grid grid-cols-2 gap-4">
-						<!-- Type -->
-						<div>
-							<label class="block text-sm font-medium text-slate-700 mb-1">Transaction Type</label>
-							<select bind:value={balanceType} class="block w-full  border border-slate-200 py-2.5 px-4 text-sm">
-								<option value="deposit">Deposit</option>
-								<option value="withdrawal">Withdrawal</option>
-								<option value="transfer">Transfer</option>
-								<option value="payment">Payment</option>
-								<option value="fee">Fee</option>
-							</select>
-						</div>
-						<!-- Date -->
-						<div>
-							<label class="block text-sm font-medium text-slate-700 mb-1">Transaction Date</label>
-							<input type="date" bind:value={balanceDate} class="block w-full  border border-slate-200 py-2.5 px-4 text-sm" />
-						</div>
-					</div>
+    <!-- ACCOUNT -->
+    <section class="brut-card bg-white p-5 sm:p-6">
+      <h2 class="font-display text-lg font-bold">HOLDER FILE</h2>
+      <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="border-2 border-ink bg-paper p-3"><p class="micro-label !text-[9px] text-ink/50">EMAIL</p><p class="mt-1 truncate font-mono text-xs font-bold">{user.email}</p></div>
+        <div class="border-2 border-ink bg-paper p-3"><p class="micro-label !text-[9px] text-ink/50">PHONE</p><p class="mt-1 font-mono text-xs font-bold">{user.phone || '—'}</p></div>
+        <div class="border-2 border-ink bg-paper p-3"><p class="micro-label !text-[9px] text-ink/50">ROLE</p><p class="mt-1 font-mono text-xs font-bold">{user.role.toUpperCase()} · {user.verified ? 'VERIFIED' : 'UNVERIFIED'}</p></div>
+        <div class="border-2 border-ink bg-paper p-3"><p class="micro-label !text-[9px] text-ink/50">LAST LOGIN</p><p class="mt-1 font-mono text-xs font-bold">{user.last_login ? formatDate(user.last_login) : 'NEVER'}</p></div>
+      </div>
 
-					<!-- Description -->
-					<div>
-						<label class="block text-sm font-medium text-slate-700 mb-1">Description <span class="text-red-500">*</span></label>
-						<input type="text" bind:value={balanceDescription}
-							class="block w-full  border border-slate-200 py-2.5 px-4 text-sm"
-							placeholder="e.g. Balance correction" />
-					</div>
+      {#if showEdit}
+        <div class="mt-4 grid gap-3 border-2 border-ink bg-paper p-4 sm:grid-cols-3">
+          <div>
+            <label class="micro-label" for="e-status">STATUS</label>
+            <select id="e-status" bind:value={eStatus} class="input-base mt-1 font-mono font-bold">
+              <option value="active">ACTIVE</option>
+              <option value="pending">PENDING</option>
+              <option value="suspended">SUSPENDED</option>
+            </select>
+          </div>
+          <div>
+            <label class="micro-label" for="e-role">ROLE</label>
+            <select id="e-role" bind:value={eRole} class="input-base mt-1 font-mono font-bold">
+              <option value="user">HOLDER</option>
+              <option value="admin">OPERATOR</option>
+            </select>
+          </div>
+          <div>
+            <label class="micro-label" for="e-ver">VERIFIED</label>
+            <select id="e-ver" bind:value={eVerified} class="input-base mt-1 font-mono font-bold">
+              <option value={true}>YES</option>
+              <option value={false}>NO</option>
+            </select>
+          </div>
+          <div class="flex gap-2 sm:col-span-3">
+            <button class="btn-primary flex-1" onclick={saveEdit} disabled={savingEdit}>{savingEdit ? 'SAVING…' : 'SAVE FILE'}</button>
+            <button class="btn-secondary flex-1" onclick={() => (showEdit = false)}>CANCEL</button>
+          </div>
+        </div>
+      {/if}
 
-					<!-- Sender name -->
-					<div>
-						<label class="block text-sm font-medium text-slate-700 mb-1">Sender / Merchant Name (optional)</label>
-						<input type="text" bind:value={balanceSenderName}
-							class="block w-full  border border-slate-200 py-2.5 px-4 text-sm"
-							placeholder="e.g. Mrs B, ACME Corp" />
-					</div>
-
-					<div class="flex gap-3 pt-2">
-						<button onclick={handleBalanceSave} disabled={savingBalance}
-							class="flex-1 py-3  bg-gold text-white font-semibold hover:bg-gold-deep disabled:opacity-50 flex items-center justify-center gap-2">
-							{#if savingBalance}<LoadingSpinner size="sm" color="text-white" />{/if}
-							{savingBalance ? 'Saving...' : 'Apply Balance Change'}
-						</button>
-						<button onclick={() => showBalancePanel = false}
-							class="px-5 py-3  border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50">
-							Cancel
-						</button>
-					</div>
-				</div>
-			</div>
-			{/if}
-
-			<!-- ── Admin Transfer Panel ───────────────────────────── -->
-			{#if showTransferPanel}
-			<div class=" border-2 border-blue-300 bg-blue-50 shadow-sm overflow-hidden">
-				<div class="border-b border-blue-200 bg-blue-100 px-6 py-4 flex items-center justify-between">
-					<h3 class="font-bold text-blue-900">🏦 Post Transaction to Account</h3>
-					<button onclick={() => showTransferPanel = false} class="text-blue-600 hover:text-blue-800 text-xl font-bold">×</button>
-				</div>
-				<div class="p-6 space-y-4">
-					<div>
-						<label class="block text-sm font-medium text-slate-700 mb-1">Target Account</label>
-						<select bind:value={txAccountId} class="block w-full  border border-slate-200 py-2.5 px-4 text-sm">
-							{#each accounts as acc}
-								<option value={String(acc.id)}>{acc.nickname || acc.account_type} — {formatCurrency(acc.balance)}</option>
-							{/each}
-						</select>
-					</div>
-
-					<div class="grid grid-cols-2 gap-4">
-						<div>
-							<label class="block text-sm font-medium text-slate-700 mb-1">Amount <span class="text-red-500">*</span></label>
-							<div class="relative">
-								<span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-medium">$</span>
-								<input type="number" bind:value={txAmount} step="0.01" min="0.01"
-									class="block w-full  border border-slate-200 py-3 pl-8 pr-4 text-sm"
-									placeholder="20.00" />
-							</div>
-						</div>
-						<div>
-							<label class="block text-sm font-medium text-slate-700 mb-1">Transaction Type</label>
-							<select bind:value={txType} class="block w-full  border border-slate-200 py-2.5 px-4 text-sm">
-								<option value="deposit">Deposit</option>
-								<option value="transfer">Transfer</option>
-								<option value="payment">Payment</option>
-								<option value="withdrawal">Withdrawal</option>
-								<option value="fee">Fee</option>
-							</select>
-						</div>
-					</div>
-
-					<div>
-						<label class="block text-sm font-medium text-slate-700 mb-1">Sender / From Name</label>
-						<input type="text" bind:value={txSenderName}
-							class="block w-full  border border-slate-200 py-2.5 px-4 text-sm"
-							placeholder="e.g. Mrs B, Wire Transfer, ACME Corp" />
-						<p class="mt-1 text-xs text-slate-500">This appears as the merchant/sender in the user's transaction history.</p>
-					</div>
-
-					<div>
-						<label class="block text-sm font-medium text-slate-700 mb-1">Description <span class="text-red-500">*</span></label>
-						<input type="text" bind:value={txDescription}
-							class="block w-full  border border-slate-200 py-2.5 px-4 text-sm"
-							placeholder="e.g. Wire transfer from Mrs B" />
-					</div>
-
-					<div>
-						<label class="block text-sm font-medium text-slate-700 mb-1">Transaction Date</label>
-						<input type="date" bind:value={txDate} class="block w-full  border border-slate-200 py-2.5 px-4 text-sm" />
-					</div>
-
-					<!-- Preview -->
-					{#if txAmount && txDescription}
-					<div class=" bg-white border border-blue-200 p-4 text-sm">
-						<p class="text-xs font-semibold text-slate-500 uppercase mb-2">Preview — how it appears to user</p>
-						<div class="flex items-center justify-between">
-							<div>
-								<p class="font-semibold text-slate-900">{txDescription}</p>
-								<p class="text-slate-500 capitalize">{txSenderName || 'Admin'} · {txType}</p>
-							</div>
-							<span class="font-bold text-green-600">+{formatCurrency(parseFloat(txAmount) || 0)}</span>
-						</div>
-					</div>
-					{/if}
-
-					<div class="flex gap-3 pt-2">
-						<button onclick={handleTransferSave} disabled={savingTx}
-							class="flex-1 py-3  bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2">
-							{#if savingTx}<LoadingSpinner size="sm" color="text-white" />{/if}
-							{savingTx ? 'Posting...' : 'Post Transaction'}
-						</button>
-						<button onclick={() => showTransferPanel = false}
-							class="px-5 py-3  border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50">
-							Cancel
-						</button>
-					</div>
-				</div>
-			</div>
-			{/if}
-
-			<!-- Transaction History -->
-			<div class=" border border-slate-200 bg-white shadow-sm overflow-hidden">
-				<div class="flex items-center justify-between border-b border-slate-200 p-6">
-					<h3 class="text-lg font-bold text-slate-900">Transaction History</h3>
-					<span class="text-xs text-slate-500">Last 20</span>
-				</div>
-				{#if transactions.length === 0}
-					<p class="px-6 py-8 text-center text-sm text-slate-500">No transactions yet.</p>
-				{:else}
-				<div class="overflow-x-auto">
-					<table class="w-full">
-						<thead class="bg-slate-50">
-							<tr>
-								<th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Description</th>
-								<th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Type</th>
-								<th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Date</th>
-								<th class="px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase">Amount</th>
-								<th class="px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase">Balance After</th>
-							</tr>
-						</thead>
-						<tbody class="divide-y divide-slate-100">
-							{#each transactions as tx}
-								<tr class="hover:bg-slate-50 transition-colors">
-									<td class="px-6 py-4">
-										<p class="font-medium text-slate-900">{tx.description}</p>
-										{#if tx.merchant}<p class="text-xs text-slate-500">{tx.merchant}</p>{/if}
-									</td>
-									<td class="px-6 py-4">
-										<span class="inline-flex items-center  px-2.5 py-1 text-xs font-semibold capitalize bg-slate-100 text-slate-700">{tx.type}</span>
-									</td>
-									<td class="px-6 py-4 text-sm text-slate-500">{formatDate(tx.created_at)}</td>
-									<td class="px-6 py-4 text-right font-bold {tx.amount >= 0 ? 'text-green-600' : 'text-slate-900'}">
-										{tx.amount >= 0 ? '+' : ''}{formatCurrency(tx.amount)}
-									</td>
-									<td class="px-6 py-4 text-right text-sm text-slate-500">
-										{tx.balance_after != null ? formatCurrency(tx.balance_after) : '—'}
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
-				{/if}
-			</div>
-		</div>
-
-		<!-- ── Sidebar ───────────────────────────────────────────────── -->
-		<div class="space-y-6">
-
-			<!-- Admin Actions -->
-			<div class=" border border-slate-200 bg-white p-6 shadow-sm">
-				<h3 class="mb-4 text-lg font-bold text-slate-900">Admin Actions</h3>
-				<div class="space-y-3">
-					<button onclick={() => { showBalancePanel = !showBalancePanel; showTransferPanel = false; }}
-						class="flex w-full items-center gap-3  border p-4 text-left transition-all {showBalancePanel ? 'border-gold bg-paper' : 'border-slate-200 bg-slate-50 hover:border-emerald-200 hover:bg-paper'}">
-						<span class="text-xl">💰</span>
-						<div>
-							<p class="text-sm font-semibold text-slate-900">Edit Balance</p>
-							<p class="text-xs text-slate-500">Set exact amount or add/subtract</p>
-						</div>
-					</button>
-
-					<button onclick={() => { showTransferPanel = !showTransferPanel; showBalancePanel = false; }}
-						class="flex w-full items-center gap-3  border p-4 text-left transition-all {showTransferPanel ? 'border-blue-400 bg-blue-50' : 'border-slate-200 bg-slate-50 hover:border-blue-200 hover:bg-blue-50'}">
-						<span class="text-xl">🏦</span>
-						<div>
-							<p class="text-sm font-semibold text-slate-900">Post Transaction</p>
-							<p class="text-xs text-slate-500">Credit account with custom details</p>
-						</div>
-					</button>
-
-					<button
-						onclick={async () => {
-							const newStatus = user.status === 'active' ? 'suspended' : 'active';
-							const res = await apiRequest('/admin/user_update.php', { method: 'POST', body: JSON.stringify({ user_id: userId, status: newStatus }) });
-							if (res.success) { user.status = newStatus; toast.success(`User ${newStatus}`); }
-							else toast.error('Failed to update status');
-						}}
-						class="flex w-full items-center gap-3  border border-slate-200 bg-slate-50 p-4 text-left transition-all hover:border-amber-200 hover:bg-amber-50">
-						<span class="text-xl">🚫</span>
-						<div>
-							<p class="text-sm font-semibold text-slate-900">{user.status === 'active' ? 'Suspend' : 'Activate'} User</p>
-							<p class="text-xs text-slate-500">{user.status === 'active' ? 'Restrict access' : 'Restore access'}</p>
-						</div>
-					</button>
-
-					<button
-						onclick={async () => {
-							if (!confirm('Delete this user permanently?')) return;
-							const res = await apiRequest('/admin/user_delete.php', { method: 'POST', body: JSON.stringify({ user_id: userId }) });
-							if (res.success) { toast.success('User deleted'); goto('/admin/users'); }
-							else toast.error('Failed to delete user');
-						}}
-						class="flex w-full items-center gap-3  border border-slate-200 bg-slate-50 p-4 text-left transition-all hover:border-red-200 hover:bg-red-50">
-						<span class="text-xl">🗑️</span>
-						<div>
-							<p class="text-sm font-semibold text-slate-900">Delete User</p>
-							<p class="text-xs text-slate-500">Permanently remove account</p>
-						</div>
-					</button>
-				</div>
-			</div>
-
-			<!-- Account Stats -->
-			<div class=" bg-gradient-to-br from-slate-900 to-slate-800 p-6 text-white shadow-lg">
-				<h3 class="mb-4 text-lg font-bold">Account Statistics</h3>
-				<div class="space-y-3">
-					<div class="flex justify-between border-b border-slate-700 pb-3">
-						<span class="text-sm text-slate-400">Total Balance</span>
-						<span class="font-bold text-gold">{formatCurrency(totalBalance)}</span>
-					</div>
-					<div class="flex justify-between border-b border-slate-700 pb-3">
-						<span class="text-sm text-slate-400">Transactions</span>
-						<span class="font-semibold">{stats?.total_transactions ?? 0}</span>
-					</div>
-					<div class="flex justify-between border-b border-slate-700 pb-3">
-						<span class="text-sm text-slate-400">Total In</span>
-						<span class="font-semibold text-green-400">+{formatCurrency(stats?.total_in ?? 0)}</span>
-					</div>
-					<div class="flex justify-between pb-1">
-						<span class="text-sm text-slate-400">Total Out</span>
-						<span class="font-semibold text-red-400">{formatCurrency(stats?.total_out ?? 0)}</span>
-					</div>
-				</div>
-			</div>
-
-			<!-- Account flags -->
-			<div class=" border border-slate-200 bg-white p-6 shadow-sm">
-				<h3 class="mb-4 text-lg font-bold text-slate-900">Account Flags</h3>
-				<div class="space-y-2 text-sm">
-					<div class="flex items-center gap-2">
-						<span class="{user.verified ? 'text-gold' : 'text-red-500'}">{user.verified ? '✓' : '✗'}</span>
-						<span class="text-slate-600">Email verified</span>
-					</div>
-					<div class="flex items-center gap-2">
-						<span class="{user.role === 'admin' ? 'text-blue-600' : 'text-slate-400'}">●</span>
-						<span class="text-slate-600">Role: <strong class="capitalize">{user.role}</strong></span>
-					</div>
-					<div class="flex items-center gap-2">
-						<span class="{user.status === 'active' ? 'text-gold' : 'text-amber-500'}">●</span>
-						<span class="text-slate-600">Status: <strong class="capitalize">{user.status}</strong></span>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <button class="btn-secondary !px-4 !py-2 !text-xs" onclick={() => (showEdit = !showEdit)}>✎ EDIT FILE</button>
+        <button
+          class="border-2 border-ink px-4 py-2 font-display text-xs font-bold {user.status === 'active' ? 'bg-blood text-white' : 'bg-acid text-ink'}"
+          style="box-shadow: 4px 4px 0 #0b132b;"
+          onclick={toggleStatus}
+        >
+          {user.status === 'active' ? '⛔ SUSPEND (BLOCK TRADING)' : '✅ UNSUSPEND (RESTORE TRADING)'}
+        </button>
+        <button class="btn-secondary !px-4 !py-2 !text-xs hover:!bg-blood hover:!text-white" onclick={removeUser}>NUKE HOLDER</button>
+      </div>
+    </section>
+  </div>
 {/if}
