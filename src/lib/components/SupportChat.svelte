@@ -60,7 +60,7 @@
 
 <div class="fixed right-4 bottom-4 z-50 sm:right-6 sm:bottom-6">
   {#if open}
-    <div class="flex h-96 w-80 flex-col border-2 border-ink bg-white shadow-[6px_6px_0_#0b132b] sm:w-96">
+    <div class="flex h-96 max-h-[calc(100vh-6rem)] w-80 max-w-[calc(100vw-2rem)] flex-col border-2 border-ink bg-white shadow-[6px_6px_0_#0b132b] sm:w-96">
       <div class="flex items-center justify-between border-b-2 border-ink bg-ink px-4 py-3 text-white">
         <p class="font-display text-sm font-bold tracking-widest">HELP DESK <span class="font-mono text-[10px] text-acid">● ONLINE</span></p>
         <button onclick={toggle} class="font-bold" aria-label="Close chat">✕</button>
@@ -77,7 +77,7 @@
         <div bind:this={boxEl} class="flex-1 space-y-3 overflow-y-auto bg-paper p-4">
           {#each messages as m}
             <div class="max-w-[85%] border-2 border-ink p-2.5 {m.sender === 'user' ? 'ml-auto bg-gold' : 'bg-white'}">
-              <p class="text-sm">{m.body}</p>
+              <p class="text-sm break-words">{m.body}</p>
               <p class="mt-1 font-mono text-[10px] text-ink/50">{m.sender === 'user' ? 'YOU' : 'HELP DESK'}</p>
             </div>
           {/each}

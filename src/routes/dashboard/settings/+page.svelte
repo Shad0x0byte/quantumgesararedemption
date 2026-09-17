@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { toast } from '$lib/stores/toast';
-	import { auth } from '$lib/stores/auth';
-	import { onMount } from 'svelte';
+import { toast } from '$lib/stores/toast';
+import { auth } from '$lib/stores/auth';
 
 	let authState = $auth;
 
@@ -29,60 +28,8 @@
 	let preferences = {
 		language: 'en',
 		currency: 'USD',
-		timezone: 'America/New_York',
-		theme: 'light' as 'light' | 'dark' | 'system'
+		timezone: 'America/New_York'
 	};
-
-	let currentTheme = 'light';
-
-	// Apply theme on mount and when preferences change
-	onMount(() => {
-		// Load saved theme from localStorage
-		if (typeof window !== 'undefined') {
-			const savedTheme = localStorage.getItem('theme') || 'light';
-			preferences.theme = savedTheme as 'light' | 'dark' | 'system';
-			applyTheme(savedTheme);
-		}
-	});
-
-	function applyTheme(theme: string) {
-		if (typeof window === 'undefined') return;
-
-		const html = document.documentElement;
-
-		if (theme === 'system') {
-			const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
-				? 'dark'
-				: 'light';
-			html.setAttribute('data-theme', systemTheme);
-			currentTheme = systemTheme;
-		} else {
-			html.setAttribute('data-theme', theme);
-			currentTheme = theme;
-		}
-
-		// For Tailwind dark mode
-		if (
-			theme === 'dark' ||
-			(theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-		) {
-			html.classList.add('dark');
-		} else {
-			html.classList.remove('dark');
-		}
-	}
-
-	function handleThemeChange(theme: 'light' | 'dark' | 'system') {
-		preferences.theme = theme;
-		applyTheme(theme);
-
-		// Save to localStorage
-		if (typeof window !== 'undefined') {
-			localStorage.setItem('theme', theme);
-		}
-
-		toast.success(`Theme changed to ${theme === 'system' ? 'System' : theme} mode`);
-	}
 
 	function handleSaveProfile() {
 		toast.success('Profile updated successfully!');
@@ -116,7 +63,7 @@
 			<div class="flex-1">
 				<h3 class="text-sm font-bold text-red-900 sm:text-base">Profile Updates Restricted</h3>
 				<p class="mt-0.5 text-xs text-red-700 sm:text-sm">
-					Your account is currently suspended. While you can view your profile and change app preferences like theme and language, personal data updates and photo changes are temporarily disabled.
+					Your account is currently suspended. While you can view your profile, personal data updates are temporarily disabled.
 				</p>
 			</div>
 			<a href="mailto:support@quantumgesararedemption.com" 
@@ -194,7 +141,7 @@
 						</div>
 					</div>
 
-					<div class="grid grid-cols-2 gap-4">
+					<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 						<div>
 							<label class="mb-2 block text-sm font-semibold text-slate-700">First Name</label>
 							<input
@@ -375,65 +322,6 @@
 							<option value="America/Denver">Mountain Time (MT)</option>
 							<option value="America/Los_Angeles">Pacific Time (PT)</option>
 						</select>
-					</div>
-
-					<div>
-						<label class="mb-2 block text-sm font-semibold text-slate-700">Theme</label>
-						<div class="grid grid-cols-3 gap-3">
-							<button
-								onclick={() => handleThemeChange('light')}
-								class=" border-2 p-4 text-center transition-all {preferences.theme ===
-								'light'
-									? 'border-gold bg-paper'
-									: 'border-slate-200 bg-slate-50 hover:border-emerald-300'}"
-							>
-								<span class="text-2xl">☀️</span>
-								<p
-									class="mt-2 text-sm font-semibold {preferences.theme === 'light'
-										? 'text-gold'
-										: 'text-slate-700'}"
-								>
-									Light
-								</p>
-							</button>
-							<button
-								onclick={() => handleThemeChange('dark')}
-								class=" border-2 p-4 text-center transition-all {preferences.theme ===
-								'dark'
-									? 'border-gold bg-paper'
-									: 'border-slate-200 bg-slate-900 hover:border-emerald-300'}"
-							>
-								<span class="text-2xl">🌙</span>
-								<p
-									class="mt-2 text-sm font-semibold {preferences.theme === 'dark'
-										? 'text-gold'
-										: 'text-white'}"
-								>
-									Dark
-								</p>
-							</button>
-							<button
-								onclick={() => handleThemeChange('system')}
-								class=" border-2 p-4 text-center transition-all {preferences.theme ===
-								'system'
-									? 'border-gold bg-paper'
-									: 'border-slate-200 bg-gradient-to-b from-slate-50 to-slate-900 hover:border-emerald-300'}"
-							>
-								<span class="text-2xl">🔄</span>
-								<p
-									class="mt-2 text-sm font-semibold {preferences.theme === 'system'
-										? 'text-gold'
-										: 'text-slate-700'}"
-								>
-									System
-								</p>
-							</button>
-						</div>
-						{#if preferences.theme === 'system'}
-							<p class="mt-2 text-center text-xs text-slate-500">
-								Current: {currentTheme === 'dark' ? '🌙 Dark' : '☀️ Light'} mode (based on your device)
-							</p>
-						{/if}
 					</div>
 
 					<div class="border-t border-slate-200 pt-4">

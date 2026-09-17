@@ -9,29 +9,29 @@
   const accountTypes = [
     {
       id: 'checking',
-      name: 'STARTER VAULT',
+      name: 'STARTER ACCOUNT',
       icon: '⬢',
-      description: 'Your first stack. Full wallet set, instant deposits, zero pressure.',
+      description: 'Your first portfolio. Full wallet set, instant deposits, zero pressure.',
       features: ['All 5 chains on day one', 'Instant deposit rail', 'Swaps + buy/sell unlocked', 'Onchain history included'],
-      tag: 'MOST APED',
+      tag: 'MOST POPULAR',
       recommended: true
     },
     {
       id: 'savings',
-      name: 'DEGEN PRO',
-      description: 'For high-frequency apes. Bigger ambitions, same zero fees.',
+      name: 'PRO INVESTOR',
+      description: 'For active investors. Bigger ambitions, same zero fees.',
       icon: '▲',
       features: ['Everything in Starter', 'Priority quote engine', 'Advanced order review', 'Early feature access'],
-      tag: 'HIGH OCTANE',
+      tag: 'ADVANCED',
       recommended: false
     },
     {
       id: 'both',
-      name: 'WHALE DESK',
+      name: 'PREMIUM DESK',
       icon: '◆',
-      description: 'Full send. Every feature, every chain, white-glove ops support.',
-      features: ['Everything in Degen Pro', 'Multi-wallet management', 'Direct ops line', 'Custom fee review'],
-      tag: 'FULL SEND',
+      description: 'Everything included. Every feature, every chain, white-glove ops support.',
+      features: ['Everything in Pro Investor', 'Multi-wallet management', 'Direct ops line', 'Custom fee review'],
+      tag: 'ALL INCLUDED',
       recommended: false
     }
   ];
@@ -45,7 +45,7 @@
 </script>
 
 <svelte:head>
-  <title>Mint Account — QGR Investment</title>
+  <title>Create Account — QGR Investment</title>
 </svelte:head>
 
 <div class="paper-grain min-h-screen bg-paper text-ink">
@@ -58,7 +58,7 @@
       <div class="flex items-center">
         <div class="flex items-center gap-2">
           <div class="flex h-8 w-8 items-center justify-center border-2 border-ink bg-gold font-display text-sm font-bold">1</div>
-          <span class="font-display text-sm font-bold">CHOOSE STACK</span>
+          <span class="font-display truncate text-sm font-bold">CHOOSE ACCOUNT</span>
         </div>
         <div class="mx-4 h-0.5 flex-1 bg-ink/20"></div>
         <div class="flex items-center gap-2">
@@ -77,7 +77,7 @@
   <main class="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
     <div class="mb-8 text-center">
       <span class="sticker">STEP 01</span>
-      <h1 class="font-display mt-3 text-4xl font-bold tracking-tight">PICK YOUR STACK</h1>
+      <h1 class="font-display mt-3 text-4xl font-bold tracking-tight break-words">PICK YOUR ACCOUNT</h1>
       <p class="mt-2 font-mono text-xs text-ink/60">ALL TIERS FREE IN THE DEMO. NO GAS, NO CAP.</p>
     </div>
 
@@ -93,12 +93,12 @@
           {/if}
           <div class="flex items-start gap-4">
             <div class="flex h-12 w-12 shrink-0 items-center justify-center border-2 border-ink bg-ink font-display text-xl font-bold text-gold">{account.icon}</div>
-            <div class="flex-1">
+            <div class="min-w-0 flex-1">
               <div class="flex items-center justify-between gap-2">
-                <h3 class="font-display text-lg font-bold">{account.name}</h3>
-                <span class="tag-mono">{account.tag}</span>
+                <h3 class="font-display min-w-0 flex-1 text-lg font-bold break-words">{account.name}</h3>
+                <span class="tag-mono shrink-0">{account.tag}</span>
               </div>
-              <p class="mt-1 text-sm text-ink/70">{account.description}</p>
+              <p class="mt-1 text-sm break-words text-ink/70">{account.description}</p>
               <ul class="mt-3 space-y-1">
                 {#each account.features as feature}
                   <li class="flex items-center gap-2 font-mono text-xs"><span class="font-bold text-gold-deep">■</span> {feature}</li>
@@ -115,9 +115,9 @@
       {/each}
     </div>
 
-    <div class="mt-8 flex justify-between">
-      <a href="/" class="btn-secondary">← HOME</a>
-      <button onclick={handleContinue} disabled={!selectedAccount || isLoading} class="btn-primary">
+    <div class="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
+      <a href="/" class="btn-secondary w-full text-center sm:w-auto">← HOME</a>
+      <button onclick={handleContinue} disabled={!selectedAccount || isLoading} class="btn-primary w-full sm:w-auto">
         {#if isLoading}
           <LoadingSpinner size="sm" />
         {:else}
@@ -127,7 +127,7 @@
     </div>
 
     <div class="brut-flat mt-8 bg-white p-4">
-      <p class="text-center font-mono text-xs text-ink/60">BCRYPT-HASHED · JWT SESSIONS · SECURE LEDGER · MINTING TAKES ~2 MINUTES</p>
+      <p class="text-center font-mono text-xs break-words text-ink/60">BCRYPT-HASHED · JWT SESSIONS · SECURE LEDGER · SETUP TAKES ~2 MINUTES</p>
     </div>
   </main>
 </div>

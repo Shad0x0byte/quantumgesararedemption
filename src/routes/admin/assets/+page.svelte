@@ -31,7 +31,7 @@
       price_source: a.price_source
     });
     busy = false;
-    if (res.success) toast.success(`${a.symbol} tuned. Quotes updated.`);
+    if (res.success) toast.success(`${a.symbol} updated. Quotes refreshed.`);
     else toast.error(res.error ?? 'Update failed');
   }
 
@@ -62,8 +62,8 @@
   <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
     <div>
       <p class="micro-label text-gold-deep">/// TOKENOMICS DESK</p>
-      <h1 class="font-display mt-1 text-3xl font-bold tracking-tight">GOD CONTROLS THE TICKER</h1>
-      <p class="mt-1 font-mono text-xs text-ink/60">COINGECKO-FED BY DEFAULT · MANUAL OVERRIDE WHEN YOU PLAY MARKET MAKER</p>
+      <h1 class="font-display mt-1 text-3xl font-bold tracking-tight">ASSET PRICE AND FEE CONTROLS</h1>
+      <p class="mt-1 font-mono text-xs text-ink/60">COINGECKO-FED BY DEFAULT · MANUAL OVERRIDE AVAILABLE WHEN NEEDED</p>
     </div>
     <button class="btn-acid" onclick={refreshPrices} disabled={busy}>{busy ? 'PULLING…' : '↻ PULL COINGECKO'}</button>
   </div>
@@ -91,7 +91,7 @@
     </section>
 
     <section class="brut-card bg-white p-5">
-      <h2 class="font-display text-lg font-bold">ASSETS + VIG</h2>
+      <h2 class="font-display text-lg font-bold">ASSETS + FEES</h2>
       <p class="mt-0.5 font-mono text-xs text-ink/50">FEE IN BPS · 35 = 0.35% · LIVE = COINGECKO · MANUAL = YOUR NUMBER</p>
       <div class="mt-4 overflow-x-auto">
         <table class="brut-table w-full min-w-[880px]">
@@ -118,7 +118,7 @@
                     <option value="disabled">OFF</option>
                   </select>
                 </td>
-                <td><button class="btn-secondary !px-3 !py-2 !text-xs" onclick={() => saveAsset(a)} disabled={busy}>TUNE</button></td>
+                <td><button class="btn-secondary !px-3 !py-2 !text-xs" onclick={() => saveAsset(a)} disabled={busy}>SAVE</button></td>
               </tr>
             {/each}
           </tbody>

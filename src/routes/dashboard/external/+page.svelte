@@ -70,7 +70,7 @@
   <div class="brut-card bg-white p-6">
     <h2 class="font-display font-bold tracking-widest">LINK NEW WALLET</h2>
     {#if formError}<p class="mt-3 font-mono text-xs font-bold text-blood">!! {formError}</p>{/if}
-    <div class="mt-4 grid gap-4 md:grid-cols-3">
+    <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
       <div>
         <label class="micro-label" for="lw-label">WALLET</label>
         <select id="lw-label" bind:value={label} class="input-base mt-1 font-mono">{#each LABELS as l}<option value={l}>{l}</option>{/each}</select>
@@ -100,12 +100,12 @@
             <span class="sticker">{w.label}</span>
             <div class="min-w-0 flex-1">
               <p class="font-mono text-[11px] text-ink/50">{w.network}</p>
-              <p class="truncate font-mono text-sm font-bold">{w.address}</p>
+              <p class="font-mono text-sm font-bold break-all">{w.address}</p>
             </div>
             <button onclick={() => lookup(w)} disabled={lookupBusy === key} class="btn-secondary !px-4 !py-2 !text-xs">{lookupBusy === key ? '…' : balances[key] ? 'REFRESH' : 'SHOW BALANCE'}</button>
           </div>
           {#if balances[key]}
-            <p class="mt-2 font-mono text-sm">BALANCE <span class="font-bold">{balances[key].balance} {balances[key].symbol}</span> ≈ <span class="font-bold">${balances[key].value_usd}</span> <span class="text-ink/50">(simulated read-only)</span></p>
+            <p class="mt-2 overflow-x-auto font-mono text-sm">BALANCE <span class="font-bold">{balances[key].balance} {balances[key].symbol}</span> ≈ <span class="font-bold">${balances[key].value_usd}</span> <span class="text-ink/50">(simulated read-only)</span></p>
           {/if}
         </div>
       {/each}

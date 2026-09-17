@@ -13,7 +13,7 @@
         </div>
       </div>
       <nav class="flex flex-wrap justify-center gap-x-5 gap-y-2 font-display text-xs font-bold tracking-widest">
-        {#each [['STACK', '/dashboard'], ['DEPOSIT', '/dashboard/deposit'], ['LINK WALLET', '/dashboard/external'], ['VAULT', '/dashboard/wallets'], ['ONCHAIN', '/dashboard/transactions']] as [label, href]}
+        {#each [['OVERVIEW', '/dashboard'], ['DEPOSIT', '/dashboard/deposit'], ['LINK WALLET', '/dashboard/external'], ['WALLETS', '/dashboard/wallets']] as [label, href]}
           <a {href} class="hover:bg-acid hover:text-ink hover:px-1">{label}</a>
         {/each}
       </nav>

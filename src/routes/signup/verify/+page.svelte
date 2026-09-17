@@ -30,7 +30,7 @@
 
   async function handleVerify() {
     if (verificationCode.join('').length !== 6) {
-      toast.error('Full 6-digit code, degen');
+      toast.error('Please enter the full 6-digit code');
       return;
     }
     isLoading = true;
@@ -44,7 +44,7 @@
   async function handleResend() {
     isResending = true;
     countdown = 30;
-    toast.info('Fresh code beamed to your inbox');
+    toast.info('A new code was sent to your email');
     const timer = setInterval(() => {
       countdown--;
       if (countdown <= 0) {
@@ -56,16 +56,16 @@
 </script>
 
 <svelte:head>
-  <title>Verify Humanity — QGR Investment</title>
+  <title>Verify Your Account — QGR Investment</title>
 </svelte:head>
 
 <div class="paper-grain flex min-h-screen items-center justify-center bg-paper px-4 py-12 text-ink">
   <div class="w-full max-w-md">
     <div class="brut-card bg-white p-8">
       <div class="mb-8 text-center">
-        <span class="sticker">PROOF-OF-HUMAN</span>
-        <h1 class="font-display mt-3 text-2xl font-bold tracking-tight">ENTER THE CODE</h1>
-        <p class="mt-2 font-mono text-xs text-ink/60">6 DIGITS BEAMED TO YOUR EMAIL.<br />BOTS GET REKT HERE.</p>
+        <span class="sticker">EMAIL VERIFICATION</span>
+        <h1 class="font-display mt-3 text-2xl font-bold tracking-tight break-words">ENTER THE CODE</h1>
+        <p class="mt-2 font-mono text-xs break-words text-ink/60">A 6-DIGIT CODE WAS SENT TO YOUR EMAIL.<br />ENTER IT BELOW TO CONTINUE.</p>
       </div>
 
       <div class="mb-6">
@@ -79,7 +79,7 @@
               oninput={(e) => handleInput(e, i)}
               onkeydown={(e) => handleKeydown(e, i)}
               onpaste={handlePaste}
-              class="h-14 w-12 border-2 border-ink bg-paper text-center font-display text-2xl font-bold outline-none focus:bg-acid"
+              class="h-12 w-10 border-2 border-ink bg-paper text-center font-display text-2xl font-bold outline-none focus:bg-acid sm:h-14 sm:w-12"
             />
           {/each}
         </div>
@@ -89,7 +89,7 @@
         {#if isLoading}
           <LoadingSpinner size="sm" />
         {:else}
-          VERIFY HUMANITY
+          VERIFY CODE
         {/if}
       </button>
 
@@ -103,7 +103,7 @@
 
       <div class="brut-flat mt-6 bg-paper p-4">
         <p class="font-display text-xs font-bold tracking-widest">WHY THE CODE?</p>
-        <p class="mt-1 font-mono text-[11px] text-ink/60">KEEPS BOTS OUT OF THE VAULT. WE NEVER ASK FOR IT ANYWHERE ELSE.</p>
+        <p class="mt-1 font-mono text-[11px] break-words text-ink/60">KEEPS AUTOMATED ABUSE OUT OF YOUR ACCOUNT. WE NEVER ASK FOR IT ANYWHERE ELSE.</p>
       </div>
     </div>
 

@@ -71,7 +71,7 @@
           <span class="sticker">{a.asset}</span>
           <div class="min-w-0 flex-1">
             <p class="font-mono text-[11px] text-ink/50">{a.network} NETWORK</p>
-            <p class="truncate font-mono text-sm font-bold">{a.address}</p>
+            <p class="font-mono text-sm font-bold break-all">{a.address}</p>
           </div>
           <button onclick={() => copy(a.address)} class="btn-secondary !px-4 !py-2 !text-xs">{copied === a.address ? 'COPIED ✓' : 'COPY'}</button>
         </div>
@@ -82,7 +82,7 @@
   <div class="brut-card bg-white p-6">
     <h2 class="font-display font-bold tracking-widest">I SENT FUNDS — DECLARE</h2>
     {#if formError}<p class="mt-3 font-mono text-xs font-bold text-blood">!! {formError}</p>{/if}
-    <div class="mt-4 grid gap-4 md:grid-cols-2">
+    <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
       <div>
         <label class="micro-label" for="dep-asset">ASSET</label>
         <select id="dep-asset" bind:value={asset} class="input-base mt-1 font-mono">

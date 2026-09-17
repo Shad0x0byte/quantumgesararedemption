@@ -46,21 +46,19 @@
   $: currentPath = $page.url.pathname.replace(/\/$/, '') || '/dashboard';
 
   const navItems: NavItem[] = [
-    { href: '/dashboard', label: 'STACK', icon: '▦' },
+    { href: '/dashboard', label: 'OVERVIEW', icon: '▦' },
     { href: '/dashboard/deposit', label: 'DEPOSIT', icon: '$' },
     { href: '/dashboard/external', label: 'LINK WALLET', icon: '🔗' },
-    { href: '/dashboard/wallets', label: 'VAULT', icon: '⬢' },
-    { href: '/dashboard/transactions', label: 'ONCHAIN', icon: '⛓' },
-    { href: '/dashboard/security', label: 'OPSEC', icon: '#' },
-    { href: '/dashboard/settings', label: 'CONFIG', icon: '⚙' }
+    { href: '/dashboard/wallets', label: 'WALLETS', icon: '⬢' },
+    { href: '/dashboard/security', label: 'SECURITY', icon: '#' },
+    { href: '/dashboard/settings', label: 'SETTINGS', icon: '⚙' }
   ];
 
   const mobileNavItems: NavItem[] = [
-    { href: '/dashboard', label: 'STACK', icon: '▦' },
+    { href: '/dashboard', label: 'OVERVIEW', icon: '▦' },
     { href: '/dashboard/deposit', label: 'DEPOSIT', icon: '$' },
-    { href: '/dashboard/wallets', label: 'VAULT', icon: '⬢' },
-    { href: '/dashboard/external', label: 'LINK', icon: '🔗' },
-    { href: '/dashboard/transactions', label: 'ONCHAIN', icon: '⛓' }
+    { href: '/dashboard/wallets', label: 'WALLETS', icon: '⬢' },
+    { href: '/dashboard/external', label: 'LINK', icon: '🔗' }
   ];
 
   function isActive(href: string) {
@@ -109,6 +107,7 @@
               <a
                 href={item.href}
                 onclick={() => (sidebarOpen = false)}
+                aria-current={isActive(item.href) ? 'page' : undefined}
                 class="flex items-center gap-3 border-2 px-3 py-2.5 font-display text-sm font-bold tracking-widest transition-all {isActive(item.href)
                   ? 'border-gold bg-gold text-ink'
                   : 'border-transparent text-white/60 hover:border-white/30 hover:text-white'}"
@@ -145,23 +144,23 @@
 
     <!-- MAIN -->
     <div class="flex min-w-0 flex-1 flex-col lg:ml-72">
-      <header class="sticky top-0 z-30 flex h-16 items-center gap-4 border-b-2 border-ink bg-paper px-4 sm:px-6">
+      <header class="sticky top-0 z-30 flex min-h-16 flex-wrap items-center gap-2 border-b-2 border-ink bg-paper px-3 py-2 sm:gap-4 sm:px-6">
         <button class="border-2 border-ink bg-white p-1.5 lg:hidden" onclick={() => (sidebarOpen = !sidebarOpen)} aria-label="Menu">
           <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
         </button>
         <div class="flex-1">
           <p class="font-display text-sm font-bold tracking-widest">
-            {#if currentPath === '/dashboard'}GM, {(authState.user?.first_name ?? 'INVESTOR').toUpperCase()} ▲
+            {#if currentPath === '/dashboard'}Hello, {(authState.user?.first_name ?? 'INVESTOR').toUpperCase()}
             {:else if currentPath.includes('deposit')}DEPOSIT // FUND
             {:else if currentPath.includes('external')}LINK // WALLETS
-            {:else if currentPath.includes('wallets')}VAULT // WALLETS
-            {:else if currentPath.includes('transactions')}ONCHAIN // ACTIVITY
+            {:else if currentPath.includes('wallets')}MY WALLETS
+            {:else if currentPath.includes('transactions')}RECENT ACTIVITY
             {:else}TERMINAL{/if}
           </p>
         </div>
         <span class="sticker hidden !text-[9px] sm:inline-block">LIVE PRICES</span>
         <Translate />
-        <a href="/dashboard/deposit" class="btn-primary !px-4 !py-2 !text-xs">DEPOSIT $</a>
+        <a href="/dashboard/deposit" class="btn-primary !px-3 !py-1.5 !text-xs sm:!px-4 sm:!py-2">DEPOSIT $</a>
       </header>
 
       <main class="flex-1 px-4 py-6 pb-24 sm:px-6 lg:px-8 lg:pb-8">

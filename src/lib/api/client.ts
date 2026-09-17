@@ -359,6 +359,9 @@ export const getAdminDepositAddresses = () =>
 export const saveAdminDepositAddress = (data: { asset: string; network: string; address: string; active?: number }) =>
   apiRequest('/admin/deposit_addresses.php', { method: 'POST', body: JSON.stringify(data) });
 
+export const deleteAdminDepositAddress = (asset: string, network: string) =>
+  apiRequest('/admin/deposit_addresses.php', { method: 'POST', body: JSON.stringify({ asset, network, action: 'delete' }) });
+
 export const getAdminDeposits = (status = 'pending') =>
   apiRequest(`/admin/deposits.php?status=${encodeURIComponent(status)}`, { method: 'GET' });
 

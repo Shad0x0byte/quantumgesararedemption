@@ -42,7 +42,7 @@
       priceMeta = d.price_meta ?? null;
       loadError = '';
     } else if (!wallets.length) {
-      loadError = res.error ?? 'Vault unreachable.';
+      loadError = res.error ?? 'Wallets unavailable. Please try again.';
     }
   }
 
@@ -96,7 +96,7 @@
     const res = await depositFunds(active.symbol, depositAmount);
     busy = false;
     if (res.success) {
-      formOk = `Deposited ${formatCrypto(depositAmount, active.symbol)} into the vault.`;
+      formOk = `Deposited ${formatCrypto(depositAmount, active.symbol)} into your wallet.`;
       await refresh();
       active = wallets.find((w) => w.symbol === active!.symbol) ?? active;
       toast.success('Deposit confirmed');
@@ -117,7 +117,7 @@
     }
     const avail = active.available_balance ?? active.balance;
     if (sendAmount > avail) {
-      formError = `Amount exceeds available ${formatCrypto(avail, active.symbol)}. No leverage here.`;
+      formError = `Amount exceeds your available balance (${formatCrypto(avail, active.symbol)}).`;
       return;
     }
     formError = '';
@@ -134,7 +134,7 @@
     const d = res.data as any;
     busy = false;
     if (res.success) {
-      formOk = `Yeeted ${formatCrypto(sendAmount, active.symbol)}. Fee ${formatCrypto(d.fee_amount ?? 0, active.symbol)} — total debit ${formatCrypto(d.total_debit ?? sendAmount, active.symbol)}.`;
+      formOk = `Sent ${formatCrypto(sendAmount, active.symbol)}. Fee ${formatCrypto(d.fee_amount ?? 0, active.symbol)} — total debit ${formatCrypto(d.total_debit ?? sendAmount, active.symbol)}.`;
       sendReview = null;
       await refresh();
       active = wallets.find((w) => w.symbol === active!.symbol) ?? active;
@@ -159,7 +159,7 @@
     const res = await transferCrypto(active.symbol, transferEmail.trim(), transferAmount);
     busy = false;
     if (res.success) {
-      formOk = `Beamed ${formatCrypto(transferAmount, active.symbol)} to ${transferEmail}. Both ledgers updated.`;
+      formOk = `Sent ${formatCrypto(transferAmount, active.symbol)} to ${transferEmail}. Both ledgers updated.`;
       await refresh();
       active = wallets.find((w) => w.symbol === active!.symbol) ?? active;
       toast.success('Transfer settled');
@@ -174,7 +174,7 @@
   });
 </script>
 
-<svelte:head><title>Vault — QGR Investment</title></svelte:head>
+<svelte:head><title>Wallets — QGR Investment</title></svelte:head>
 
 {#if loading}
   <div class="flex items-center justify-center py-32"><LoadingSpinner size="lg" /></div>
@@ -184,9 +184,9 @@
   <div class="fade-in space-y-6">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <p class="micro-label text-gold-deep">/// VAULT</p>
-        <h1 class="font-display mt-1 text-3xl font-bold tracking-tight sm:text-4xl">YOUR KEYS, YOUR COINS*</h1>
-        <p class="mt-1 font-mono text-xs text-ink/60">*SELF-CUSTODY VIEW. {priceMeta ? (priceMeta.mode === 'live' ? '● LIVE PRICES' : `CACHED ${priceMeta.age_seconds ?? '?'}S`) : ''}</p>
+        <p class="micro-label text-gold-deep">/// WALLETS</p>
+        <h1 class="font-display mt-1 text-2xl font-bold tracking-tight sm:text-4xl">YOUR WALLETS AT A GLANCE</h1>
+        <p class="mt-1 font-mono text-xs text-ink/60">*LIVE BALANCES VIEW. {priceMeta ? (priceMeta.mode === 'live' ? '● LIVE PRICES' : `CACHED ${priceMeta.age_seconds ?? '?'}S`) : ''}</p>
       </div>
       <button class="btn-secondary" onclick={refresh}>↻ REFRESH</button>
     </div>
@@ -200,10 +200,10 @@
     </div>
 
     {#if !filtered.length}
-      <div class="brut-card bg-white p-10 text-center font-bold">No vaults on this chain. Touch grass, try another.</div>
+      <div class="brut-card bg-white p-10 text-center font-bold">No wallets on this network yet. Try another network.</div>
     {/if}
 
-    <div class="grid gap-5 md:grid-cols-2">
+    <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
       {#each filtered as wallet}
         <article class="brut-card bg-white p-5 sm:p-6">
           <div class="flex items-start justify-between">
@@ -217,7 +217,7 @@
             <span class="tag-mono">{wallet.status.replace('_', ' ').toUpperCase()}</span>
           </div>
           <div class="mt-5 border-2 border-ink bg-paper p-4">
-            <p class="micro-label text-ink/50">STACK</p>
+            <p class="micro-label text-ink/50">BALANCE</p>
             <p class="font-display mt-1 text-2xl font-bold">{formatCrypto(wallet.balance, wallet.symbol)}</p>
             <p class="mt-1 font-mono text-sm font-bold">{formatUsd(wallet.value_usd)}</p>
             <p class="mt-1 font-mono text-[11px] text-ink/50">SPENDABLE {formatCrypto(wallet.available_balance ?? wallet.balance, wallet.symbol)}{#if (wallet.locked_balance ?? 0) > 0} · LOCKED {formatCrypto(wallet.locked_balance ?? 0, wallet.symbol)}{/if}</p>
@@ -226,10 +226,10 @@
             <p class="micro-label !text-[9px] text-ink/40">DEPOSIT ADDRESS</p>
             <p class="mt-1 font-mono text-xs break-all">{shorten(wallet.address)}</p>
           </div>
-          <div class="mt-4 flex gap-2">
-            <button class="btn-secondary flex-1 !px-2" onclick={() => open('receive', wallet)}>↓ RECEIVE</button>
-            <button class="btn-secondary flex-1 !px-2" onclick={() => open('send', wallet)}>↑ SEND</button>
-            <button class="btn-primary flex-1 !px-2" onclick={() => open('transfer', wallet)}>⇄ BEAM</button>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <button class="btn-secondary min-w-0 flex-1 !px-2" onclick={() => open('receive', wallet)}>↓ RECEIVE</button>
+            <button class="btn-secondary min-w-0 flex-1 !px-2" onclick={() => open('send', wallet)}>↑ SEND</button>
+            <button class="btn-primary min-w-0 flex-1 !px-2" onclick={() => open('transfer', wallet)}>⇄ TRANSFER</button>
           </div>
         </article>
       {/each}
@@ -242,14 +242,14 @@
     <div class="brut-card w-full max-w-md bg-white p-6">
       <div class="flex items-center justify-between">
         <h2 class="font-display text-lg font-bold">
-          {modal === 'receive' ? `RECEIVE ${active.symbol}` : modal === 'send' ? `SEND ${active.symbol}` : `BEAM ${active.symbol}`}
+          {modal === 'receive' ? `RECEIVE ${active.symbol}` : modal === 'send' ? `SEND ${active.symbol}` : `TRANSFER ${active.symbol}`}
         </h2>
         <button class="border-2 border-ink bg-paper px-2 font-bold hover:bg-blood hover:text-white" onclick={close}>✕</button>
       </div>
       <p class="mt-1 font-mono text-xs text-ink/50">{active.network} · SPENDABLE {formatCrypto(active.available_balance ?? active.balance, active.symbol)}</p>
 
-      {#if formError}<div class="brut-flat mt-4 border-blood bg-white p-3 text-sm font-bold text-blood">REKT: {formError}</div>{/if}
-      {#if formOk}<div class="brut-flat mt-4 border-ink bg-acid p-3 text-sm font-bold">WAGMI: {formOk}</div>{/if}
+      {#if formError}<div class="brut-flat mt-4 border-blood bg-white p-3 text-sm font-bold break-all">Error: {formError}</div>{/if}
+      {#if formOk}<div class="brut-flat mt-4 border-ink bg-acid p-3 text-sm font-bold break-all">Success: {formOk}</div>{/if}
 
       {#if modal === 'receive'}
         <div class="mt-4 flex flex-col items-center">
@@ -278,18 +278,18 @@
               <label class="micro-label" for="send-amt">AMOUNT ({active.symbol})</label>
               <input id="send-amt" type="number" min="0" step="any" bind:value={sendAmount} class="input-base mt-1 font-mono" />
             </div>
-            <button class="btn-primary w-full" onclick={reviewSend}>REVIEW YEET</button>
+            <button class="btn-primary w-full" onclick={reviewSend}>REVIEW SEND</button>
           </div>
         {:else}
           <div class="mt-4 space-y-2 border-2 border-ink bg-paper p-4 font-mono text-sm">
-            <div class="flex justify-between gap-2"><span class="text-ink/50">TO</span><span class="max-w-[220px] truncate text-xs">{sendAddress}</span></div>
+            <div class="flex justify-between gap-2"><span class="text-ink/50">TO</span><span class="max-w-[220px] break-all text-xs">{sendAddress}</span></div>
             <div class="flex justify-between"><span class="text-ink/50">AMOUNT</span><span class="font-bold">{formatCrypto(sendAmount, active.symbol)}</span></div>
             <div class="flex justify-between"><span class="text-ink/50">FEE ~</span><span class="font-bold">{formatCrypto(sendReview.feeAsset, active.symbol)} ({formatUsd(sendReview.feeUsd)})</span></div>
             <div class="flex justify-between border-t-2 border-ink pt-2"><span class="text-ink/50">TOTAL DEBIT</span><span class="font-bold">{formatCrypto(sendReview.total, active.symbol)}</span></div>
           </div>
-          <div class="mt-4 flex gap-2">
-            <button class="btn-secondary flex-1" onclick={() => (sendReview = null)}>BACK</button>
-            <button class="btn-acid flex-1" onclick={doSend} disabled={busy}>{busy ? 'YEETING…' : 'CONFIRM YEET'}</button>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <button class="btn-secondary min-w-0 flex-1" onclick={() => (sendReview = null)}>BACK</button>
+            <button class="btn-acid min-w-0 flex-1" onclick={doSend} disabled={busy}>{busy ? 'SENDING…' : 'CONFIRM SEND'}</button>
           </div>
         {/if}
       {/if}
@@ -297,15 +297,15 @@
       {#if modal === 'transfer'}
         <div class="mt-4 space-y-3">
           <div>
-            <label class="micro-label" for="xfer-email">RECIPIENT (LOCAL DEGEN EMAIL)</label>
-            <input id="xfer-email" type="email" bind:value={transferEmail} class="input-base mt-1 font-mono" placeholder="fren@qgr.exchange" />
+            <label class="micro-label" for="xfer-email">RECIPIENT (EMAIL)</label>
+            <input id="xfer-email" type="email" bind:value={transferEmail} class="input-base mt-1 font-mono" placeholder="friend@example.com" />
           </div>
           <div>
             <label class="micro-label" for="xfer-amt">AMOUNT ({active.symbol})</label>
             <input id="xfer-amt" type="number" min="0" step="any" bind:value={transferAmount} class="input-base mt-1 font-mono" />
           </div>
-          <button class="btn-acid w-full" onclick={doTransfer} disabled={busy}>{busy ? 'BEAMING…' : 'CONFIRM BEAM'}</button>
-          <p class="font-mono text-[11px] text-ink/50">Recipient credited instantly. Both histories updated. Friendship strengthened.</p>
+          <button class="btn-acid w-full" onclick={doTransfer} disabled={busy}>{busy ? 'SENDING…' : 'CONFIRM TRANSFER'}</button>
+          <p class="font-mono text-[11px] text-ink/50">Recipient credited instantly. Both histories updated.</p>
         </div>
       {/if}
     </div>

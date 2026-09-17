@@ -60,7 +60,7 @@
     <div>
       <span class="sticker-blood">OPS</span>
       <h1 class="font-display mt-2 text-3xl font-bold tracking-tight">HELP DESK</h1>
-      <p class="mt-1 font-mono text-xs text-white/60">LIVE INVESTOR CHATS — REPLY HERE, IT LANDS IN THEIR BUBBLE.</p>
+      <p class="mt-1 font-mono text-xs text-white/60">LIVE INVESTOR CONVERSATIONS — REPLIES APPEAR IN THEIR MESSAGE THREAD.</p>
     </div>
     <select bind:value={qStatus} onchange={() => { loadThreads(); activeId = 0; active = null; }} class="input-base max-w-40 font-mono text-ink">
       <option value="open">OPEN</option>
@@ -109,7 +109,7 @@
             </div>
           {/each}
         </div>
-        <form onsubmit={(e) => { e.preventDefault(); sendReply(); }} class="flex gap-2 pt-3">
+        <form onsubmit={(e) => { e.preventDefault(); sendReply(); }} class="flex flex-wrap gap-2 pt-3">
           <input bind:value={reply} maxlength="2000" placeholder="Reply as help desk…" class="input-base flex-1 font-mono text-sm" />
           <button type="submit" disabled={busy} class="btn-acid !px-5 !py-2 !text-xs">{busy ? '…' : 'REPLY'}</button>
         </form>

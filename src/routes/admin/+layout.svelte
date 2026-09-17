@@ -26,7 +26,7 @@
 
   const navItems = [
     { href: '/admin', label: 'OVERVIEW', icon: '▦' },
-    { href: '/admin/users', label: 'DEGENS', icon: '●' },
+    { href: '/admin/users', label: 'INVESTORS', icon: '●' },
     { href: '/admin/deposits', label: 'DEPOSITS', icon: '$' },
     { href: '/admin/support', label: 'HELP DESK', icon: '💬' },
     { href: '/admin/crypto', label: 'OPS DESK', icon: '⬢' },
@@ -38,6 +38,12 @@
   function handleLogout() {
     auth.clearAuth();
     goto('/login');
+  }
+
+  function navActive(href: string) {
+    const path = $page.url.pathname.replace(/\/$/, '') || '/admin';
+    if (href === '/admin') return path === '/admin';
+    return path === href || path.startsWith(href + '/');
   }
 
   function getInitials(): string {
@@ -60,7 +66,7 @@
               <img src="/qgr-mark.svg" alt="QGR" class="h-12 w-12 border-2 border-gold bg-gold" />
               <div>
                 <span class="block font-display text-xl font-bold tracking-tight">QGR/INVEST</span>
-                <span class="sticker-blood !text-[9px]">CONTROL ROOM</span>
+                <span class="sticker-blood !text-[9px]">ADMINISTRATION</span>
               </div>
             </a>
           </div>
@@ -69,7 +75,7 @@
               <div class="flex h-14 w-14 items-center justify-center border-2 border-gold bg-gold font-display font-bold text-ink">{getInitials()}</div>
               <div class="min-w-0 flex-1">
                 <p class="truncate font-display text-sm font-bold">{authState.user?.first_name} {authState.user?.last_name || ''}</p>
-                <p class="mt-0.5 font-mono text-xs text-gold">OPERATOR // FULL SEND</p>
+                <p class="mt-0.5 font-mono text-xs text-gold">SYSTEM ADMINISTRATOR</p>
               </div>
             </div>
           </div>
@@ -77,13 +83,14 @@
             {#each navItems as item}
               <a
                 href={item.href}
-                class="flex items-center gap-3 border-2 px-4 py-3 font-display text-sm font-bold tracking-widest transition-all {$page.url.pathname === item.href
+                aria-current={navActive(item.href) ? 'page' : undefined}
+                class="flex items-center gap-3 border-2 px-4 py-3 font-display text-sm font-bold tracking-widest transition-all {navActive(item.href)
                   ? 'border-gold bg-gold text-ink'
                   : 'border-transparent text-white/60 hover:border-white/30 hover:text-white'}"
               >
                 <span class="w-5 text-center">{item.icon}</span>
                 {item.label}
-                {#if $page.url.pathname === item.href}<span class="ml-auto font-mono text-[10px]">◀</span>{/if}
+                {#if navActive(item.href)}<span class="ml-auto font-mono text-[10px]">◀</span>{/if}
               </a>
             {/each}
           </nav>
@@ -92,7 +99,7 @@
               onclick={handleLogout}
               class="flex w-full items-center gap-3 border-2 border-blood px-4 py-3 font-display text-sm font-bold tracking-widest text-blood transition-all hover:bg-blood hover:text-white"
             >
-              <span>⏻</span> RAGE QUIT
+              <span>⏻</span> LOG OUT
             </button>
           </div>
         </div>
@@ -101,7 +108,7 @@
       <header class="fixed top-0 right-0 left-0 z-40 flex items-center justify-between border-b-2 border-ink bg-ink p-4 text-white lg:hidden">
         <div class="flex items-center gap-2">
           <img src="/qgr-mark.svg" alt="QGR" class="h-8 w-8 border border-gold bg-gold" />
-          <span class="font-display text-base font-bold">CONTROL ROOM</span>
+          <span class="font-display text-base font-bold">ADMINISTRATION</span>
         </div>
         <button onclick={() => (sidebarOpen = !sidebarOpen)} class="border-2 border-gold p-1.5 text-gold" aria-label="Menu">
           {#if sidebarOpen}✕{:else}☰{/if}

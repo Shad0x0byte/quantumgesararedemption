@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { getAdminDeposits, reviewAdminDeposit, getAdminDepositAddresses, saveAdminDepositAddress } from '$lib/api/client';
+  import { getAdminDeposits, reviewAdminDeposit, getAdminDepositAddresses, saveAdminDepositAddress, deleteAdminDepositAddress } from '$lib/api/client';
   import { toast } from '$lib/stores/toast';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 
@@ -51,10 +51,39 @@
     const res = await saveAdminDepositAddress({ asset: aAsset, network: aNetwork, address: aAddress.trim(), active: aActive ? 1 : 0 });
     aBusy = false;
     if (res.success) {
-      toast.success('Deposit address saved');
-      aAddress = '';
+      toast.success(editing ? 'Deposit address updated' : 'Deposit address saved');
+      resetAddrForm();
       await loadAddrs();
     } else toast.error((res.errors?.join(', ') ?? res.error) || 'Save failed');
+  }
+
+  let editing: { asset: string; network: string } | null = null;
+
+  function resetAddrForm() {
+    aAsset = 'ETH';
+    aNetwork = 'ETH';
+    aAddress = '';
+    aActive = true;
+    editing = null;
+  }
+
+  function editAddr(a: any) {
+    editing = { asset: a.asset, network: a.network };
+    aAsset = a.asset;
+    aNetwork = a.network;
+    aAddress = a.address;
+    aActive = !!a.active;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  async function removeAddr(a: any) {
+    if (!confirm(`Delete the ${a.asset}/${a.network} company address? Users will no longer see it.`)) return;
+    const res = await deleteAdminDepositAddress(a.asset, a.network);
+    if (res.success) {
+      toast.success('Address deleted');
+      if (editing?.asset === a.asset && editing?.network === a.network) resetAddrForm();
+      await loadAddrs();
+    } else toast.error(res.error ?? 'Delete failed');
   }
 </script>
 
@@ -76,9 +105,14 @@
             <span class="font-bold">{a.asset}/{a.network}</span>
             <span class="min-w-0 flex-1 truncate">{a.address}</span>
             <span class={a.active ? 'font-bold text-up' : 'font-bold text-blood'}>{a.active ? 'LIVE' : 'OFF'}</span>
+            <button onclick={() => editAddr(a)} class="border border-ink bg-white px-2 py-0.5 font-bold hover:bg-gold">EDIT</button>
+            <button onclick={() => removeAddr(a)} class="border border-blood px-2 py-0.5 font-bold text-blood hover:bg-blood hover:text-white">DELETE</button>
           </div>
         {/each}
       </div>
+    {/if}
+    {#if editing}
+      <p class="mt-3 font-mono text-xs font-bold text-gold-deep">EDITING {editing.asset}/{editing.network} — <button onclick={resetAddrForm} class="underline">cancel</button></p>
     {/if}
     <div class="mt-4 grid gap-3 md:grid-cols-4">
       <input bind:value={aAsset} class="input-base font-mono" placeholder="ASSET e.g. ETH" />
@@ -86,11 +120,11 @@
       <input bind:value={aAddress} class="input-base font-mono md:col-span-1" placeholder="0x… / bc1…" />
       <label class="flex items-center gap-2 font-mono text-xs font-bold"><input type="checkbox" bind:checked={aActive} class="h-4 w-4 border-2 border-ink" /> ACTIVE</label>
     </div>
-    <button onclick={saveAddr} disabled={aBusy} class="btn-primary mt-4">{aBusy ? 'SAVING…' : 'SAVE ADDRESS →'}</button>
+    <button onclick={saveAddr} disabled={aBusy} class="btn-primary mt-4">{aBusy ? 'SAVING…' : editing ? 'UPDATE ADDRESS →' : 'SAVE ADDRESS →'}</button>
   </div>
 
   <div class="brut-card bg-white p-6 text-ink">
-    <div class="flex items-center justify-between">
+    <div class="flex flex-wrap items-center justify-between gap-3">
       <h2 class="font-display font-bold tracking-widest">REVIEW QUEUE</h2>
       <select bind:value={qStatus} onchange={loadQueue} class="input-base max-w-40 font-mono">
         <option value="pending">PENDING</option>
@@ -109,7 +143,7 @@
             <p><span class="font-bold">#{d.id}</span> {d.email} — <span class="font-bold">{d.amount} {d.asset}</span> ({d.network || '—'}) · REF {d.tx_ref || '—'} · {d.created_at}</p>
             {#if d.status === 'pending'}
               <div class="mt-2 flex flex-wrap gap-2">
-                <input bind:value={note[d.id]} placeholder="ops note (optional)" class="input-base flex-1 font-mono" />
+                <input bind:value={note[d.id]} placeholder="admin note (optional)" class="input-base w-full flex-1 font-mono" />
                 <button onclick={() => review(d.id, 'approve')} disabled={busy === d.id} class="btn-acid !px-4 !py-2 !text-xs">APPROVE + CREDIT</button>
                 <button onclick={() => review(d.id, 'reject')} disabled={busy === d.id} class="btn-secondary !px-4 !py-2 !text-xs !border-blood !text-blood">REJECT</button>
               </div>

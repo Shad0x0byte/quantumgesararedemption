@@ -26,20 +26,20 @@
 
   const chains = [
     { sym: 'BTC', name: 'Bitcoin', desc: 'Digital gold. The hardest money ever deployed.', tag: 'UTXO' },
-    { sym: 'ETH', name: 'Ethereum', desc: 'Programmable money. Home of DeFi, stablecoins, degeneracy.', tag: 'EVM' },
-    { sym: 'SOL', name: 'Solana', desc: 'Lightspeed settlement for high-frequency apes.', tag: 'SVM' },
-    { sym: 'POL', name: 'Polygon', desc: 'Cheap, fast EVM rails. Gas fees that respect your stack.', tag: 'EVM' },
+    { sym: 'ETH', name: 'Ethereum', desc: 'Programmable money. Home of DeFi and stablecoins.', tag: 'EVM' },
+    { sym: 'SOL', name: 'Solana', desc: 'Fast settlement for active investors.', tag: 'SVM' },
+    { sym: 'POL', name: 'Polygon', desc: 'Cheap, fast EVM rails. Gas fees that respect your portfolio.', tag: 'EVM' },
     { sym: 'BASE', name: 'Base', desc: 'Coinbase-backed L2. Onchain summer never ends.', tag: 'L2' },
     { sym: 'USDC', name: 'Stablecoins', desc: 'USDC + USDT. Park profits, dodge volatility, stay liquid.', tag: '$' }
   ];
 
   const features = [
-    { title: 'MANAGED PORTFOLIOS', desc: 'Deposit crypto and let the company trade it for you. Live valuations, full history, zero spreadsheet cope.', sticker: 'INVEST' },
+    { title: 'MANAGED PORTFOLIOS', desc: 'Deposit crypto and let the company trade it for you. Live valuations, full history, no spreadsheets needed.', sticker: 'INVEST' },
     { title: 'COMPANY DEPOSIT ADDRESSES', desc: 'Admin-published wallet addresses per asset. Copy, send, declare — approval credits your portfolio.', sticker: 'DEPOSIT' },
     { title: 'LINK YOUR WALLET', desc: 'Connect Trust Wallet, MetaMask or Phantom by public address only. Read-only balances, never any seed phrases.', sticker: 'BRIDGE' },
     { title: 'SETTLEMENT LEDGER', desc: 'Every balance movement is accounted for — double-entry discipline, atomic settlement, full audit trail. Your money, fully explainable.', sticker: 'LEDGER' },
     { title: 'RECOVERY PHRASES', desc: 'Every account gets a 12-word platform recovery phrase. Sign in with password or phrase.', sticker: 'KEYS' },
-    { title: 'OPS CONTROL ROOM', desc: 'Admin console for deposits, balances, approvals and audit trails. Suspension enforced server-side.', sticker: 'OPS' }
+    { title: 'OPS CONSOLE', desc: 'Admin console for deposits, balances, approvals and audit trails. Suspension enforced server-side.', sticker: 'OPS' }
   ];
 
   const faqs = [
@@ -66,7 +66,7 @@
         <span class="font-display text-xl font-bold tracking-tight">QGR<span class="text-gold-deep">/</span>INVEST</span>
       </a>
       <div class="hidden items-center gap-5 md:flex">
-        {#each [['#chains', 'ASSETS'], ['#stack', 'WHY QGR'], ['#how', 'HOW IT WORKS'], ['#stories', 'STORIES'], ['#faq', 'FAQ']] as [href, label]}
+        {#each [['#chains', 'ASSETS'], ['#why', 'WHY QGR'], ['#how', 'HOW IT WORKS'], ['#stories', 'STORIES'], ['#faq', 'FAQ']] as [href, label]}
           <a {href} class="font-display text-xs font-bold tracking-[0.18em] hover:bg-acid hover:px-1">{label}</a>
         {/each}
         <Translate />
@@ -81,7 +81,7 @@
     </div>
       {#if mobileOpen}
       <div class="space-y-1 border-t-2 border-ink bg-paper px-4 pt-2 pb-5 md:hidden">
-        {#each [['#chains', 'ASSETS'], ['#stack', 'WHY QGR'], ['#how', 'HOW IT WORKS'], ['#stories', 'STORIES'], ['#faq', 'FAQ']] as [href, label]}
+        {#each [['#chains', 'ASSETS'], ['#why', 'WHY QGR'], ['#how', 'HOW IT WORKS'], ['#stories', 'STORIES'], ['#faq', 'FAQ']] as [href, label]}
           <a {href} class="block py-2.5 font-display text-sm font-bold tracking-widest" onclick={() => (mobileOpen = false)}>{label}</a>
         {/each}
         <a href="/login" class="block py-2.5 font-display text-sm font-bold tracking-widest">LOG IN</a>
@@ -106,8 +106,8 @@
         let the company trade — <span class="text-acid font-bold">built for serious investors.</span>
       </p>
       <div class="mt-8 flex flex-col gap-4 sm:flex-row">
-        <a href="/signup" class="btn-acid !px-10 !py-4 !text-base">MINT YOUR STACK →</a>
-        <a href="/login" class="inline-flex items-center justify-center gap-2 border-2 border-gold px-10 py-4 font-display text-base font-bold tracking-wider text-gold hover:bg-gold hover:text-ink">ENTER THE VAULT</a>
+        <a href="/signup" class="btn-acid w-full !px-10 !py-4 !text-base sm:w-auto">CREATE YOUR ACCOUNT →</a>
+        <a href="/login" class="inline-flex w-full items-center justify-center gap-2 border-2 border-gold px-10 py-4 font-display text-base font-bold tracking-wider text-gold hover:bg-gold hover:text-ink sm:w-auto">GO TO DASHBOARD</a>
       </div>
       <div class="mt-10 grid grid-cols-3 gap-4 border-t-2 border-gold/30 pt-8">
         <div><p class="font-display text-3xl font-bold text-gold sm:text-4xl">5</p><p class="micro-label mt-1 text-white/50">Chains wired</p></div>
@@ -137,7 +137,7 @@
   </section>
 
   <!-- WHY -->
-  <section id="stack" class="border-y-2 border-ink bg-paper-dim">
+  <section id="why" class="border-y-2 border-ink bg-paper-dim">
     <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
       <p class="micro-label text-gold-deep">/// WHY QGR</p>
       <h2 class="font-display mt-2 text-4xl font-bold tracking-tight sm:text-5xl">BUILT FOR INVESTORS.<br />HONEST LIKE A LEDGER.</h2>
@@ -159,7 +159,7 @@
       <p class="micro-label text-gold">/// HOW IT WORKS</p>
       <h2 class="font-display mt-2 text-4xl font-bold tracking-tight sm:text-5xl">FROM SIGNUP TO YIELD IN 4 STEPS</h2>
       <div class="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
-        {#each [['01', 'CREATE ACCOUNT', 'Sign up in minutes. Bcrypt-hashed passwords, JWT sessions, plus a 12-word recovery phrase — sign in with either.'], ['02', 'DEPOSIT CRYPTO', 'Copy the company wallet address for your asset, send funds, declare the deposit. Admin approval credits your portfolio.'], ['03', 'WE TRADE, YOU GROW', 'QGR strategists deploy across spot, staking and managed DeFi vaults. Watch allocation and P&L live.'], ['04', 'WITHDRAW ANYTIME', 'Send to your linked wallet or transfer between users. Every move settled on a double-entry ledger.']] as [n, t, d]}
+        {#each [['01', 'CREATE ACCOUNT', 'Sign up in minutes. Bcrypt-hashed passwords, JWT sessions, plus a 12-word recovery phrase — sign in with either.'], ['02', 'DEPOSIT CRYPTO', 'Copy the company wallet address for your asset, send funds, declare the deposit. Admin approval credits your portfolio.'], ['03', 'WE TRADE, YOU GROW', 'QGR strategists deploy across spot, staking and managed DeFi strategies. Watch allocation and P&L live.'], ['04', 'WITHDRAW ANYTIME', 'Send to your linked wallet or transfer between users. Every move settled on a double-entry ledger.']] as [n, t, d]}
           <div class="border-2 border-gold bg-ink-soft p-6">
             <p class="font-display text-5xl font-bold text-gold">{n}</p>
             <h3 class="font-display mt-3 text-xl font-bold">{t}</h3>
@@ -168,8 +168,8 @@
         {/each}
       </div>
       <div class="mt-10 flex flex-col gap-4 sm:flex-row">
-        <a href="/signup" class="btn-acid !px-10 !py-4 !text-base">START INVESTING →</a>
-        <a href="/login" class="inline-flex items-center justify-center gap-2 border-2 border-gold px-10 py-4 font-display text-base font-bold tracking-wider text-gold hover:bg-gold hover:text-ink">CHAT WITH HELP DESK</a>
+        <a href="/signup" class="btn-acid w-full !px-10 !py-4 !text-base sm:w-auto">START INVESTING →</a>
+        <a href="/login" class="inline-flex w-full items-center justify-center gap-2 border-2 border-gold px-10 py-4 font-display text-base font-bold tracking-wider text-gold hover:bg-gold hover:text-ink sm:w-auto">CHAT WITH HELP DESK</a>
       </div>
       <p class="mt-4 font-mono text-xs text-white/50">Logged-in clients get a live 24/7 help-desk chat bubble on every page.</p>
     </div>
@@ -177,7 +177,7 @@
 
   <!-- STATS -->
   <section class="border-b-2 border-ink bg-gold text-ink">
-    <div class="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 py-10 sm:px-6 lg:grid-cols-4 lg:px-8">
+    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 py-10 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:px-8">
       {#each [['$48M+', 'ASSETS UNDER MANAGEMENT'], ['12,400+', 'INVESTORS ONBOARD'], ['20', 'TOP-CAP ASSETS SUPPORTED'], ['24/7', 'WEB3 HELP DESK']] as [v, l]}
         <div class="text-center">
           <p class="font-display text-4xl font-bold tracking-tight sm:text-5xl">{v}</p>
@@ -190,9 +190,9 @@
   <!-- WEB3 STRIP -->
   <section class="border-b-2 border-ink bg-paper">
     <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <p class="micro-label text-gold-deep">/// THE STACK</p>
+      <p class="micro-label text-gold-deep">/// THE PLATFORM</p>
       <div class="mt-3 flex flex-wrap gap-2.5 font-display text-xs font-bold tracking-widest">
-        {#each ['WEB3 NATIVE', 'DEFI YIELD VAULTS', 'ONCHAIN SETTLEMENT', 'STAKING REWARDS', 'RISK-MANAGED LEVERAGE', 'COLD-STORAGE CUSTODY', 'REAL-TIME AUDIT', 'FIAT ON-RAMPS'] as b}
+        {#each ['WEB3 NATIVE', 'DEFI YIELD ACCOUNTS', 'BLOCKCHAIN SETTLEMENT', 'STAKING REWARDS', 'RISK-MANAGED LEVERAGE', 'COLD-STORAGE CUSTODY', 'REAL-TIME AUDIT', 'FIAT ON-RAMPS'] as b}
           <span class="border-2 border-ink bg-white px-3 py-1.5">{b}</span>
         {/each}
       </div>
@@ -208,7 +208,7 @@
         {#each [['Marcus T.', 'Lagos · Investor since 2024', 'I linked my Trust Wallet in two minutes and watched my first BTC deposit get approved the same day. The portfolio view reads like a Bloomberg terminal without the Bloomberg invoice.'], ['Adaeze O.', 'London · Investor since 2023', 'What sold me was the ledger — every credit has a receipt, every trade a trail. Support answered my withdrawal question at 2am. In minutes.'], ['Ruben P.', 'Madrid · Investor since 2024', 'I came for the ETH staking yields and stayed for the transparency. Recovery-phrase login means I never worry about losing access.'], ['Lena K.', 'Berlin · Investor since 2025', 'Twenty top-cap assets, one dashboard, zero spreadsheets. My USDC parking earns while I sleep and I can see exactly where it sits.']] as [n, m, q]}
           <figure class="brut-card bg-white p-6">
             <p class="font-display text-4xl text-gold">“</p>
-            <blockquote class="mt-1 leading-relaxed">{q}</blockquote>
+            <blockquote class="mt-1 leading-relaxed break-words">{q}</blockquote>
             <figcaption class="mt-4 border-t-2 border-ink pt-3">
               <p class="font-display text-sm font-bold">{n}</p>
               <p class="font-mono text-xs text-ink/50">{m}</p>
@@ -222,13 +222,13 @@
 
   <!-- FAQ -->
   <section id="faq" class="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
-    <p class="micro-label text-gold-deep">/// FAQ — NO DUMB QUESTIONS</p>
-    <h2 class="font-display mt-2 text-4xl font-bold tracking-tight">FUD, ANSWERED</h2>
+    <p class="micro-label break-words text-gold-deep">/// FAQ</p>
+    <h2 class="font-display mt-2 text-4xl font-bold tracking-tight break-words">QUESTIONS, ANSWERED</h2>
     <div class="mt-8 space-y-3">
       {#each faqs as faq, i}
         <div class="brut-flat">
           <button class="flex w-full items-center justify-between p-5 text-left hover:bg-paper" onclick={() => (openFaq = openFaq === i ? -1 : i)}>
-            <span class="font-display font-bold">{faq.q}</span>
+            <span class="font-display min-w-0 flex-1 font-bold break-words">{faq.q}</span>
             <span class="ml-4 border-2 border-ink bg-gold px-2 font-display font-bold">{openFaq === i ? '−' : '+'}</span>
           </button>
           {#if openFaq === i}
@@ -245,8 +245,8 @@
       <h2 class="font-display text-4xl font-bold tracking-tight sm:text-5xl">READY TO PUT CAPITAL TO WORK?</h2>
       <p class="mx-auto mt-3 max-w-xl font-medium text-ink/70">Free account. Recovery phrase included. Live portfolio from day one.</p>
       <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-        <a href="/signup" class="inline-flex items-center gap-2 border-2 border-ink bg-ink px-10 py-4 font-display text-base font-bold tracking-wider text-white hover:bg-ink-soft" style="box-shadow: 4px 4px 0 #f4f1ea;">MINT ACCOUNT</a>
-        <a href="/login" class="inline-flex items-center gap-2 border-2 border-ink bg-paper px-10 py-4 font-display text-base font-bold tracking-wider hover:bg-white" style="box-shadow: 4px 4px 0 #0b132b;">LOG IN</a>
+        <a href="/signup" class="inline-flex w-full items-center justify-center gap-2 border-2 border-ink bg-ink px-10 py-4 font-display text-base font-bold tracking-wider text-white hover:bg-ink-soft sm:w-auto" style="box-shadow: 4px 4px 0 #f4f1ea;">CREATE ACCOUNT</a>
+        <a href="/login" class="inline-flex w-full items-center justify-center gap-2 border-2 border-ink bg-paper px-10 py-4 font-display text-base font-bold tracking-wider hover:bg-white sm:w-auto" style="box-shadow: 4px 4px 0 #0b132b;">LOG IN</a>
       </div>
     </div>
   </section>
@@ -276,15 +276,15 @@
         <div>
           <h4 class="micro-label text-gold">TERMINAL</h4>
           <ul class="mt-3 space-y-2 text-sm font-bold">
-            <li><a href="/signup" class="hover:bg-acid hover:text-ink hover:px-1">MINT ACCOUNT</a></li>
-            <li><a href="/login" class="hover:bg-acid hover:text-ink hover:px-1">ENTER VAULT</a></li>
-            <li><a href="#faq" class="hover:bg-acid hover:text-ink hover:px-1">FUD / FAQ</a></li>
+            <li><a href="/signup" class="hover:bg-acid hover:text-ink hover:px-1">CREATE ACCOUNT</a></li>
+            <li><a href="/login" class="hover:bg-acid hover:text-ink hover:px-1">GO TO DASHBOARD</a></li>
+            <li><a href="#faq" class="hover:bg-acid hover:text-ink hover:px-1">FAQ</a></li>
           </ul>
         </div>
         <div>
           <h4 class="micro-label text-gold">COMMS</h4>
           <p class="mt-3 font-mono text-sm break-all">support@quantumgesararedemption.com</p>
-          <p class="mt-2 text-xs">WAGMI. Probably.</p>
+          <p class="mt-2 text-xs break-words">Invest with confidence.</p>
         </div>
       </div>
       <div class="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/15 pt-6 font-mono text-xs md:flex-row">

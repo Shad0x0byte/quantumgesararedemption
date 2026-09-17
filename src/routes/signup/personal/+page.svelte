@@ -79,7 +79,7 @@
 
   function handleContinue() {
     if (!validateStep()) {
-      toast.error('Fix the highlighted fields, degen');
+      toast.error('Please fix the highlighted fields');
       return;
     }
     signup.save({ email: formData.email, password: formData.password, firstName: formData.firstName, lastName: formData.lastName, dateOfBirth: formData.dateOfBirth, ssn: formData.ssn, phone: formData.phone });
@@ -89,7 +89,7 @@
   const field = (hasErr: boolean) => `input-base mt-1 font-mono ${hasErr ? '!border-blood' : ''}`;
 </script>
 
-<svelte:head><title>Mint Identity — QGR Investment</title></svelte:head>
+<svelte:head><title>Your Identity — QGR Investment</title></svelte:head>
 
 <div class="paper-grain min-h-screen bg-paper text-ink">
   <header class="border-b-2 border-ink bg-paper">
@@ -99,7 +99,7 @@
         <span class="font-display text-lg font-bold">QGR/INVEST</span>
       </a>
       <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2"><div class="flex h-8 w-8 items-center justify-center border-2 border-ink bg-acid font-display text-sm font-bold">✓</div><span class="font-mono text-xs text-ink/50">STACK</span></div>
+        <div class="flex items-center gap-2"><div class="flex h-8 w-8 items-center justify-center border-2 border-ink bg-acid font-display text-sm font-bold">✓</div><span class="font-mono text-xs text-ink/50">ACCOUNT</span></div>
         <div class="mx-3 h-0.5 flex-1 bg-ink"></div>
         <div class="flex items-center gap-2"><div class="flex h-8 w-8 items-center justify-center border-2 border-ink bg-gold font-display text-sm font-bold">2</div><span class="font-display text-sm font-bold">IDENTITY</span></div>
         <div class="mx-3 h-0.5 flex-1 bg-ink/20"></div>
@@ -112,22 +112,22 @@
     <div class="brut-card bg-white p-6 sm:p-8">
       <div class="mb-8 text-center">
         <span class="sticker-gold">STEP 02</span>
-        <h1 class="font-display mt-3 text-3xl font-bold tracking-tight">MINT YOUR IDENTITY</h1>
-        <p class="mt-1 font-mono text-xs text-ink/60">PROOF-OF-HUMAN (DEMO GRADE). WE NEVER SELL YOUR DATA.</p>
+        <h1 class="font-display mt-3 text-3xl font-bold tracking-tight break-words">ENTER YOUR IDENTITY</h1>
+        <p class="mt-1 font-mono text-xs break-words text-ink/60">BASIC IDENTITY DETAILS FOR YOUR ACCOUNT. WE NEVER SELL YOUR DATA.</p>
       </div>
 
       <div class="space-y-6">
         <div class="space-y-4">
           <h3 class="border-b-2 border-ink pb-2 font-display font-bold tracking-widest">COMMS</h3>
-          <div class="grid gap-4 md:grid-cols-2">
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label class="micro-label" for="su-email">EMAIL *</label>
-              <input id="su-email" type="email" bind:value={formData.email} class={field(!!errors.email)} placeholder="degen@qgr.exchange" />
+              <input id="su-email" type="email" bind:value={formData.email} class={field(!!errors.email)} placeholder="you@example.com" />
               {#if errors.email}<p class="mt-1 font-mono text-xs font-bold text-blood">!! {errors.email}</p>{/if}
             </div>
             <div>
               <label class="micro-label" for="su-email2">CONFIRM EMAIL *</label>
-              <input id="su-email2" type="email" bind:value={formData.confirmEmail} class={field(!!errors.confirmEmail)} placeholder="degen@qgr.exchange" />
+              <input id="su-email2" type="email" bind:value={formData.confirmEmail} class={field(!!errors.confirmEmail)} placeholder="you@example.com" />
               {#if errors.confirmEmail}<p class="mt-1 font-mono text-xs font-bold text-blood">!! {errors.confirmEmail}</p>{/if}
             </div>
           </div>
@@ -140,15 +140,15 @@
 
         <div class="space-y-4">
           <h3 class="border-b-2 border-ink pb-2 font-display font-bold tracking-widest">HUMAN DETAILS</h3>
-          <div class="grid gap-4 md:grid-cols-2">
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label class="micro-label" for="su-fn">FIRST NAME *</label>
-              <input id="su-fn" type="text" bind:value={formData.firstName} class={field(!!errors.firstName)} placeholder="Satoshi" />
+              <input id="su-fn" type="text" bind:value={formData.firstName} class={field(!!errors.firstName)} placeholder="John" />
               {#if errors.firstName}<p class="mt-1 font-mono text-xs font-bold text-blood">!! {errors.firstName}</p>{/if}
             </div>
             <div>
               <label class="micro-label" for="su-ln">LAST NAME *</label>
-              <input id="su-ln" type="text" bind:value={formData.lastName} class={field(!!errors.lastName)} placeholder="Nakamoto" />
+              <input id="su-ln" type="text" bind:value={formData.lastName} class={field(!!errors.lastName)} placeholder="Smith" />
               {#if errors.lastName}<p class="mt-1 font-mono text-xs font-bold text-blood">!! {errors.lastName}</p>{/if}
             </div>
           </div>
@@ -168,7 +168,7 @@
         </div>
 
         <div class="space-y-4">
-          <h3 class="border-b-2 border-ink pb-2 font-display font-bold tracking-widest">VAULT KEY (PASSWORD)</h3>
+          <h3 class="border-b-2 border-ink pb-2 font-display font-bold tracking-widest">ACCOUNT PASSWORD</h3>
           <div>
             <label class="micro-label" for="su-pw">PASSWORD *</label>
             <div class="relative">
@@ -188,9 +188,9 @@
         </div>
       </div>
 
-      <div class="mt-8 flex justify-between">
-        <a href="/signup" class="btn-secondary">← BACK</a>
-        <button onclick={handleContinue} class="btn-primary">CONTINUE →</button>
+      <div class="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
+        <a href="/signup" class="btn-secondary w-full text-center sm:w-auto">← BACK</a>
+        <button onclick={handleContinue} class="btn-primary w-full sm:w-auto">CONTINUE →</button>
       </div>
     </div>
   </main>

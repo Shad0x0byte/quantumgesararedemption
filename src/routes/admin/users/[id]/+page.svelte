@@ -58,7 +58,7 @@
     loading = false;
     const d = detail.data as any;
     if (!detail.success || !d) {
-      toast.error(detail.error || 'Failed to load holder');
+      toast.error(detail.error || 'Failed to load investor');
       return;
     }
     user = d.user;
@@ -109,7 +109,7 @@
 
   async function doAdjust() {
     if (!activeWallet) {
-      toast.error('Pick a vault first');
+      toast.error('Select a wallet first');
       return;
     }
     if (aMode !== 'set' && (!aAmount || aAmount <= 0)) {
@@ -141,7 +141,7 @@
   }
 
   async function reviewTx(tx: any, action: 'approve' | 'fail' | 'cancel') {
-    const res = await adminCryptoTxUpdate(tx.db_id, action, `ops review on holder page`);
+    const res = await adminCryptoTxUpdate(tx.db_id, action, `ops review on investor page`);
     const d = res.data as any;
     if (res.success) {
       toast.success(`TX ${d.new_status}`);
@@ -169,15 +169,15 @@
       user.role = eRole;
       user.verified = eVerified;
       showEdit = false;
-      toast.success('Holder updated');
+      toast.success('Investor updated');
     } else toast.error('Update failed');
   }
 
   async function removeUser() {
-    if (!confirm(`Nuke ${user.email}? Wallets, ledger and audit stay; the login dies. Irreversible.`)) return;
+    if (!confirm(`Delete ${user.email}? Wallets, ledger and audit history are retained; account access is removed. This cannot be undone.`)) return;
     const res = await deleteUser(userId);
     if (res.success) {
-      toast.success('Holder deleted');
+      toast.success('Investor deleted');
       goto('/admin/users');
     } else toast.error(res.error || 'Delete failed');
   }
@@ -194,20 +194,20 @@
     t.type === 'received' ? '↓' : t.type === 'sent' ? '↑' : t.type === 'swap' ? '⇄' : t.type === 'buy' ? '+' : t.type === 'sell' ? '−' : '•';
 </script>
 
-<svelte:head><title>Holder #{userId} — QGR Control Room</title></svelte:head>
+<svelte:head><title>Investor #{userId} — QGR Administration</title></svelte:head>
 
 {#if loading}
   <div class="flex items-center justify-center py-24"><LoadingSpinner size="lg" /></div>
 {:else if !user}
   <div class="py-24 text-center">
-    <p class="font-display text-xl font-bold">HOLDER NOT FOUND.</p>
-    <a href="/admin/users" class="mt-4 inline-block font-display text-sm font-bold underline decoration-gold decoration-2 underline-offset-4">← BACK TO HOLDERS</a>
+    <p class="font-display text-xl font-bold">INVESTOR NOT FOUND.</p>
+    <a href="/admin/users" class="mt-4 inline-block font-display text-sm font-bold underline decoration-gold decoration-2 underline-offset-4">← BACK TO INVESTORS</a>
   </div>
 {:else}
   <div class="space-y-6">
     <!-- HEADER -->
     <div>
-      <a href="/admin/users" class="font-mono text-xs text-ink/50 hover:bg-acid">← ALL HOLDERS</a>
+      <a href="/admin/users" class="font-mono text-xs text-ink/50 hover:bg-acid">← ALL INVESTORS</a>
       <div class="mt-2 flex flex-wrap items-center gap-3">
         <h1 class="font-display text-3xl font-bold tracking-tight">{user.first_name} {user.last_name}</h1>
         <span class="border-2 px-2 py-1 font-display text-[11px] font-bold tracking-widest uppercase {statusTag(user.status)}">{user.status}</span>
@@ -220,7 +220,7 @@
     <section class="brut-card-navy p-6">
       <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p class="micro-label text-gold">HOLDER STACK</p>
+          <p class="micro-label text-gold">PORTFOLIO BALANCE</p>
           <p class="font-display mt-2 text-4xl font-bold sm:text-5xl">{formatUsd(portfolioTotal)}</p>
           <p class="mt-1 font-mono text-sm font-bold {change24h >= 0 ? 'text-acid' : 'text-blood'}">
             {change24h >= 0 ? '▲' : '▼'} {Math.abs(change24h).toFixed(2)}% / 24H
@@ -240,7 +240,7 @@
       <section class="brut-card border-acid bg-white p-6">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="font-display text-lg font-bold">FUND VAULT BY USD VALUE</h2>
+            <h2 class="font-display text-lg font-bold">FUND WALLET BY USD VALUE</h2>
             <p class="mt-0.5 font-mono text-xs text-ink/50">YOU TYPE DOLLARS · COINGECKO DOES THE MATH · NO FEE</p>
           </div>
           <button class="border-2 border-ink bg-paper px-2 font-bold hover:bg-blood hover:text-white" onclick={() => (showFund = false)}>✕</button>
@@ -275,17 +275,17 @@
       <section class="brut-card bg-white p-6">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="font-display text-lg font-bold">ADJUST VAULT (CRYPTO UNITS)</h2>
+            <h2 class="font-display text-lg font-bold">ADJUST WALLET (CRYPTO UNITS)</h2>
             <p class="mt-0.5 font-mono text-xs text-ink/50">SET EXACT / ADD / REMOVE · EVERYTHING AUDITED</p>
           </div>
           <button class="border-2 border-ink bg-paper px-2 font-bold hover:bg-blood hover:text-white" onclick={() => (showAdjust = false)}>✕</button>
         </div>
         {#if !wallets.length}
-          <p class="mt-4 border-2 border-dashed border-ink/30 p-6 text-center font-mono text-xs text-ink/50">NO VAULTS YET — FUND BY USD ABOVE TO MINT THE FIRST ONE.</p>
+          <p class="mt-4 border-2 border-dashed border-ink/30 p-6 text-center font-mono text-xs text-ink/50">NO WALLETS YET — FUND BY USD ABOVE TO CREATE THE FIRST ONE.</p>
         {:else}
           <div class="mt-4 grid gap-4 sm:grid-cols-2">
             <div>
-              <label class="micro-label" for="adj-wallet">VAULT</label>
+              <label class="micro-label" for="adj-wallet">WALLET</label>
               <select id="adj-wallet" bind:value={aWalletId} class="input-base mt-1 font-mono font-bold">
                 <option value="">— pick —</option>
                 {#each wallets as w}<option value={String(w.id)}>{w.symbol} · {formatCrypto(w.balance, w.symbol)} ({formatUsd(w.value_usd)})</option>{/each}
@@ -314,11 +314,11 @@
       </section>
     {/if}
 
-    <!-- VAULTS -->
+    <!-- WALLETS -->
     <section class="brut-card bg-white p-5 sm:p-6">
-      <h2 class="font-display text-lg font-bold">VAULTS <span class="font-mono text-xs font-normal text-ink/50">({wallets.length})</span></h2>
+      <h2 class="font-display text-lg font-bold">WALLETS <span class="font-mono text-xs font-normal text-ink/50">({wallets.length})</span></h2>
       {#if !wallets.length}
-        <p class="mt-3 border-2 border-dashed border-ink/30 p-6 text-center font-mono text-xs text-ink/50">EMPTY — FUND THIS HOLDER TO OPEN VAULTS.</p>
+        <p class="mt-3 border-2 border-dashed border-ink/30 p-6 text-center font-mono text-xs text-ink/50">No wallets yet — fund this investor to create one.</p>
       {:else}
         <div class="mt-4 grid gap-4 md:grid-cols-2">
           {#each wallets as w}
@@ -354,7 +354,7 @@
                 <p class="font-display text-sm font-bold">{tx.id} · {tx.type.toUpperCase()} {formatCrypto(tx.amount, tx.symbol)}</p>
                 <p class="truncate font-mono text-xs text-ink/60">{tx.network} · {tx.description}</p>
               </div>
-              <div class="flex gap-2">
+              <div class="flex flex-wrap gap-2">
                 <button class="border-2 border-ink bg-acid px-3 py-2 font-display text-xs font-bold hover:bg-gold" onclick={() => reviewTx(tx, 'approve')}>APPROVE</button>
                 <button class="border-2 border-ink bg-white px-3 py-2 font-display text-xs font-bold text-blood hover:bg-blood hover:text-white" onclick={() => reviewTx(tx, 'fail')}>FAIL</button>
                 <button class="border-2 border-ink bg-white px-3 py-2 font-display text-xs font-bold hover:bg-paper-dim" onclick={() => reviewTx(tx, 'cancel')}>CANCEL</button>
@@ -368,11 +368,11 @@
     <!-- ACTIVITY -->
     <section class="brut-card overflow-hidden bg-white">
       <div class="flex items-center justify-between border-b-2 border-ink px-5 py-4">
-        <h2 class="font-display text-lg font-bold">ONCHAIN ACTIVITY</h2>
+        <h2 class="font-display text-lg font-bold">TRANSACTION ACTIVITY</h2>
         <span class="font-mono text-xs text-ink/50">LAST {transactions.length}</span>
       </div>
       {#if !transactions.length}
-        <p class="p-8 text-center font-mono text-xs text-ink/50">SILENT — NO MOVEMENTS YET.</p>
+        <p class="p-8 text-center font-mono text-xs text-ink/50">NO TRANSACTIONS YET.</p>
       {:else}
         <div class="overflow-x-auto">
           <table class="brut-table w-full min-w-[680px]">
@@ -396,7 +396,7 @@
 
     <!-- ACCOUNT -->
     <section class="brut-card bg-white p-5 sm:p-6">
-      <h2 class="font-display text-lg font-bold">HOLDER FILE</h2>
+      <h2 class="font-display text-lg font-bold">INVESTOR PROFILE</h2>
       <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div class="border-2 border-ink bg-paper p-3"><p class="micro-label !text-[9px] text-ink/50">EMAIL</p><p class="mt-1 truncate font-mono text-xs font-bold">{user.email}</p></div>
         <div class="border-2 border-ink bg-paper p-3"><p class="micro-label !text-[9px] text-ink/50">PHONE</p><p class="mt-1 font-mono text-xs font-bold">{user.phone || '—'}</p></div>
@@ -417,7 +417,7 @@
           <div>
             <label class="micro-label" for="e-role">ROLE</label>
             <select id="e-role" bind:value={eRole} class="input-base mt-1 font-mono font-bold">
-              <option value="user">HOLDER</option>
+              <option value="user">INVESTOR</option>
               <option value="admin">OPERATOR</option>
             </select>
           </div>
@@ -444,7 +444,7 @@
         >
           {user.status === 'active' ? '⛔ SUSPEND (BLOCK TRADING)' : '✅ UNSUSPEND (RESTORE TRADING)'}
         </button>
-        <button class="btn-secondary !px-4 !py-2 !text-xs hover:!bg-blood hover:!text-white" onclick={removeUser}>NUKE HOLDER</button>
+        <button class="btn-secondary !px-4 !py-2 !text-xs hover:!bg-blood hover:!text-white" onclick={removeUser}>DELETE INVESTOR</button>
       </div>
     </section>
   </div>

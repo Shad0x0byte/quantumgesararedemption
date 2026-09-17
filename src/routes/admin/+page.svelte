@@ -35,9 +35,9 @@
 <div class="space-y-8">
 
   <div>
-    <p class="micro-label text-gold-deep">/// CONTROL ROOM</p>
-    <h1 class="font-display mt-1 text-3xl font-bold tracking-tight">FLEET OVERVIEW</h1>
-    <p class="mt-1 font-mono text-xs text-ink/60">LIVE FROM THE LEDGER. ALL DEGENS, ALL BAGS.</p>
+    <p class="micro-label text-gold-deep">/// ADMINISTRATION</p>
+    <h1 class="font-display mt-1 text-3xl font-bold tracking-tight">PLATFORM OVERVIEW</h1>
+    <p class="mt-1 font-mono text-xs text-ink/60">LIVE FROM THE LEDGER. ALL INVESTORS, ALL HOLDINGS.</p>
   </div>
 
   <!-- Stat cards -->
@@ -87,13 +87,13 @@
         <div class="divide-y divide-slate-50">
           {#each recentUsers as u}
             <a href="/admin/users/{u.id}" class="flex items-center justify-between px-6 py-4 hover:bg-slate-50 transition-colors">
-              <div class="flex items-center gap-3">
+              <div class="flex min-w-0 items-center gap-3">
                 <div class="flex h-9 w-9 items-center justify-center  bg-gradient-to-br from-gold to-gold text-sm font-bold text-white">
                   {u.first_name[0]}{u.last_name[0]}
                 </div>
                 <div>
                   <p class="text-sm font-semibold text-slate-900">{u.first_name} {u.last_name}</p>
-                  <p class="text-xs text-slate-400">{u.email}</p>
+                  <p class="truncate text-xs text-slate-400">{u.email}</p>
                 </div>
               </div>
               <div class="text-right">

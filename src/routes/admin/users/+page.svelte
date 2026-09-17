@@ -27,7 +27,7 @@
     if (res.success && res.data) {
       users = res.data.users;
       priceMeta = res.data.price_meta ?? null;
-    } else toast.error(res.error || 'Failed to load holders');
+    } else toast.error(res.error || 'Failed to load investors');
   }
 
   async function handleCreate() {
@@ -51,21 +51,21 @@
         const c = await adminCryptoCreditUsd({ user_id: uid, asset: 'USDC', usd_amount: funding, note: 'Opening credit' });
         if (!c.success) {
           saving = false;
-          toast.error(`Holder created but funding failed: ${c.error}`);
+          toast.error(`Investor created but funding failed: ${c.error}`);
           await loadUsers();
           goto(`/admin/users/${uid}`);
           return;
         }
       }
       saving = false;
-      toast.success(funding > 0 ? `Holder created + funded $${funding} USDC` : 'Holder created');
+      toast.success(funding > 0 ? `Investor created + funded $${funding} USDC` : 'Investor created');
       showCreate = false;
       newUser = { first_name: '', last_name: '', email: '', password: '', phone: '', role: 'user', status: 'active', initial_balance: '' };
       await loadUsers();
       goto(`/admin/users/${uid}`);
     } else {
       saving = false;
-      createErrors = res.errors || [res.error || 'Failed to create holder'];
+      createErrors = res.errors || [res.error || 'Failed to create investor'];
     }
   }
 
@@ -78,20 +78,20 @@
     if (res.success) {
       user.status = newStatus;
       users = [...users];
-      toast.success(`Holder ${newStatus} — trading ${newStatus === 'suspended' ? 'blocked' : 'restored'}`);
+      toast.success(`Investor ${newStatus} — trading ${newStatus === 'suspended' ? 'blocked' : 'restored'}`);
     } else toast.error('Failed to update status');
   }
 
   async function handleDelete(user: any) {
-    if (!confirm(`Nuke ${user.first_name} ${user.last_name}? Wallets, ledger and audit stay; the login dies. This cannot be undone.`)) return;
+    if (!confirm(`Delete ${user.first_name} ${user.last_name}? Wallets, ledger and audit history are retained; account access is removed. This cannot be undone.`)) return;
     const res = await apiRequest('/admin/user_delete.php', {
       method: 'POST',
       body: JSON.stringify({ user_id: user.id }),
     });
     if (res.success) {
-      toast.success('Holder deleted');
+      toast.success('Investor deleted');
       users = users.filter((u) => u.id !== user.id);
-    } else toast.error(res.error || 'Failed to delete holder');
+    } else toast.error(res.error || 'Failed to delete investor');
   }
 
   $: filtered = users.filter((u) => {
@@ -114,26 +114,26 @@
   }
 </script>
 
-<svelte:head><title>Holders — QGR Control Room</title></svelte:head>
+<svelte:head><title>Investors — QGR Administration</title></svelte:head>
 
 <div class="space-y-6">
   <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
     <div>
-      <p class="micro-label text-gold-deep">/// HOLDERS</p>
-      <h1 class="font-display mt-1 text-3xl font-bold tracking-tight">EVERY DEGEN, EVERY BAG</h1>
+      <p class="micro-label text-gold-deep">/// INVESTORS</p>
+      <h1 class="font-display mt-1 text-3xl font-bold tracking-tight">EVERY INVESTOR, EVERY PORTFOLIO</h1>
       <p class="mt-1 font-mono text-xs text-ink/60">
-        {users.length} HOLDERS ON THE BOOKS
+        {users.length} INVESTORS ON THE BOOKS
         {#if priceMeta} · {priceMeta.mode === 'live' ? '● LIVE PRICES' : `CACHED ${priceMeta.age_seconds ?? '?'}S`}{/if}
       </p>
     </div>
-    <button onclick={() => (showCreate = true)} class="btn-primary">+ MINT HOLDER</button>
+    <button onclick={() => (showCreate = true)} class="btn-primary">+ CREATE INVESTOR</button>
   </div>
 
   <div class="brut-card flex flex-col gap-3 bg-white p-4 sm:flex-row">
     <input
       type="text"
       bind:value={searchQuery}
-      placeholder="Hunt by name or email…"
+      placeholder="Search by name or email…"
       class="input-base flex-1 font-mono text-xs"
     />
     <select bind:value={statusFilter} class="input-base font-mono text-xs font-bold sm:max-w-[180px]">
@@ -150,14 +150,14 @@
       <div class="flex items-center justify-center py-20"><LoadingSpinner size="lg" /></div>
     {:else if filtered.length === 0}
       <div class="py-20 text-center">
-        <p class="font-display text-2xl font-bold">NGMI — NO HOLDERS FOUND.</p>
-        <p class="mt-1 font-mono text-xs text-ink/50">Loosen the filters or mint one.</p>
+        <p class="font-display text-2xl font-bold">NO INVESTORS FOUND.</p>
+        <p class="mt-1 font-mono text-xs text-ink/50">Adjust the filters or create a new investor.</p>
       </div>
     {:else}
       <div class="overflow-x-auto">
         <table class="brut-table w-full min-w-[820px]">
           <thead>
-            <tr><th>HOLDER</th><th>EMAIL</th><th class="text-right">PORTFOLIO</th><th>VAULTS</th><th>ROLE</th><th>STATUS</th><th>JOINED</th><th></th></tr>
+            <tr><th>INVESTOR</th><th>EMAIL</th><th class="text-right">PORTFOLIO</th><th>WALLETS</th><th>ROLE</th><th>STATUS</th><th>JOINED</th><th></th></tr>
           </thead>
           <tbody class="font-mono text-xs">
             {#each filtered as user}
@@ -173,19 +173,19 @@
                     </div>
                   </div>
                 </td>
-                <td>{user.email}</td>
+                <td class="max-w-[200px] truncate">{user.email}</td>
                 <td class="text-right font-display text-sm font-bold">{formatUsd(user.portfolio_total_usd ?? 0)}</td>
-                <td><span class="tag-mono">{user.wallet_count ?? 0} VAULTS</span></td>
+                <td><span class="tag-mono">{user.wallet_count ?? 0} WALLETS</span></td>
                 <td><span class="tag-mono">{user.role.toUpperCase()}</span></td>
                 <td><span class="border-2 px-1.5 py-0.5 font-display text-[10px] font-bold tracking-widest uppercase {statusTag(user.status)}">{user.status}</span></td>
                 <td class="text-ink/50">{formatDate(user.created_at)}</td>
                 <td>
-                  <div class="flex items-center gap-3 font-display text-[11px] font-bold">
+                  <div class="flex flex-wrap items-center gap-3 font-display text-[11px] font-bold">
                     <a href="/admin/users/{user.id}" class="underline decoration-gold decoration-2 underline-offset-4 hover:bg-acid">OPEN →</a>
                     <button onclick={() => handleToggleStatus(user)} class={user.status === 'active' ? 'text-blood hover:underline' : 'text-up hover:underline'}>
                       {user.status === 'active' ? 'SUSPEND' : 'UNSUSPEND'}
                     </button>
-                    <button onclick={() => handleDelete(user)} class="text-ink/40 hover:text-blood hover:underline">NUKE</button>
+                    <button onclick={() => handleDelete(user)} class="text-ink/40 hover:text-blood hover:underline">DELETE</button>
                   </div>
                 </td>
               </tr>
@@ -196,14 +196,14 @@
     {/if}
   </div>
 
-  <p class="text-center font-mono text-[11px] text-ink/50">OPEN a holder to fund vaults, adjust balances and review activity.</p>
+  <p class="text-center font-mono text-[11px] text-ink/50">Open an investor to fund wallets, adjust balances and review activity.</p>
 </div>
 
 {#if showCreate}
   <div class="fixed inset-0 z-50 flex items-end justify-center bg-ink/70 p-4 sm:items-center" role="dialog" aria-modal="true">
     <div class="brut-card w-full max-w-lg bg-white">
       <div class="flex items-center justify-between border-b-2 border-ink px-6 py-4">
-        <h3 class="font-display text-lg font-bold">MINT NEW HOLDER</h3>
+        <h3 class="font-display text-lg font-bold">CREATE NEW INVESTOR</h3>
         <button
           onclick={() => {
             showCreate = false;
@@ -220,20 +220,20 @@
           </div>
         {/if}
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label class="micro-label" for="nu-fn">FIRST NAME *</label>
-            <input id="nu-fn" type="text" bind:value={newUser.first_name} class="input-base mt-1 font-mono" placeholder="Satoshi" />
+            <input id="nu-fn" type="text" bind:value={newUser.first_name} class="input-base mt-1 font-mono" placeholder="Jane" />
           </div>
           <div>
             <label class="micro-label" for="nu-ln">LAST NAME *</label>
-            <input id="nu-ln" type="text" bind:value={newUser.last_name} class="input-base mt-1 font-mono" placeholder="Nakamoto" />
+            <input id="nu-ln" type="text" bind:value={newUser.last_name} class="input-base mt-1 font-mono" placeholder="Smith" />
           </div>
         </div>
 
         <div>
           <label class="micro-label" for="nu-email">EMAIL *</label>
-          <input id="nu-email" type="email" bind:value={newUser.email} class="input-base mt-1 font-mono" placeholder="holder@qgr.exchange" />
+          <input id="nu-email" type="email" bind:value={newUser.email} class="input-base mt-1 font-mono" placeholder="investor@example.com" />
         </div>
 
         <div>
@@ -246,11 +246,11 @@
           <input id="nu-phone" type="tel" bind:value={newUser.phone} class="input-base mt-1 font-mono" placeholder="(555) 123-4567" />
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label class="micro-label" for="nu-role">ROLE</label>
             <select id="nu-role" bind:value={newUser.role} class="input-base mt-1 font-mono font-bold">
-              <option value="user">HOLDER</option>
+              <option value="user">INVESTOR</option>
               <option value="admin">OPERATOR</option>
             </select>
           </div>
@@ -267,7 +267,7 @@
         <div class="border-2 border-ink bg-paper p-4">
           <label class="micro-label" for="nu-fund">OPENING FUNDING (USD → USDC)</label>
           <input id="nu-fund" type="number" bind:value={newUser.initial_balance} step="any" min="0" class="input-base mt-2 font-mono" placeholder="0" />
-          <p class="mt-2 font-mono text-[11px] text-ink/60">Auto-credited as USDC at the live price. Leave 0 to fund later from the holder page.</p>
+          <p class="mt-2 font-mono text-[11px] text-ink/60">Auto-credited as USDC at the live price. Leave 0 to fund later from the investor page.</p>
         </div>
       </div>
 
@@ -281,7 +281,7 @@
         >
         <button onclick={handleCreate} disabled={saving} class="btn-primary flex-1">
           {#if saving}<LoadingSpinner size="sm" />{/if}
-          {saving ? 'MINTING…' : 'MINT HOLDER'}
+          {saving ? 'CREATING…' : 'CREATE INVESTOR'}
         </button>
       </div>
     </div>

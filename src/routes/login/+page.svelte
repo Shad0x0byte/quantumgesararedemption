@@ -44,7 +44,7 @@
 					if (rememberMe) localStorage.setItem('remember_me', '1');
 					else localStorage.removeItem('remember_me');
 				}
-				toast.success('Vault unlocked. WAGMI.');
+				toast.success('Welcome back.');
 				goto(user.role === 'admin' ? '/admin' : '/dashboard');
 			} else {
 				errors.general = res.error || 'Invalid email or password';
@@ -60,7 +60,7 @@
 </script>
 
 <svelte:head>
-	<title>Enter the Vault — QGR Investment</title>
+	<title>Log In — QGR Investment</title>
 </svelte:head>
 
 <div class="paper-grain flex min-h-screen bg-paper text-ink">
@@ -72,11 +72,11 @@
 		</a>
 		<div>
 			<span class="sticker">SESSION 02</span>
-			<h1 class="font-display mt-5 text-6xl leading-[0.95] font-bold tracking-tight">
-				ENTER<br />THE<br /><span class="bg-gold px-2 text-ink">VAULT.</span>
+			<h1 class="font-display mt-5 text-6xl leading-[0.95] font-bold tracking-tight break-words">
+				LOG<br />IN TO<br /><span class="bg-gold px-2 text-ink">ACCOUNT.</span>
 			</h1>
-			<p class="mt-5 max-w-sm leading-relaxed text-white/60">
-			Your stack is right where you left it. Live prices, settled ledger, zero funny business.
+			<p class="mt-5 max-w-sm leading-relaxed break-words text-white/60">
+			Your portfolio is right where you left it. Live prices, settled ledger, secure and reliable.
 			</p>
 		</div>
 		<div class="space-y-3 font-mono text-xs text-white/50">
@@ -97,20 +97,20 @@
 					</a>
 				</div>
 				<span class="sticker-gold">LOG IN</span>
-				<h2 class="font-display mt-3 text-3xl font-bold tracking-tight">BACK TO THE TERMINAL</h2>
+				<h2 class="font-display mt-3 text-3xl font-bold tracking-tight break-words">WELCOME BACK</h2>
 				<p class="mt-1 text-sm text-ink/60">Direct account access — email + password <span class="font-bold">or recovery phrase</span>.</p>
 
 				{#if errors.general}
 					<div class="brut-flat mt-6 border-blood bg-white p-4">
 						<p class="font-display text-sm font-bold text-blood">ACCESS DENIED</p>
-						<p class="mt-1 text-sm">{errors.general}</p>
+						<p class="mt-1 text-sm break-words">{errors.general}</p>
 					</div>
 				{/if}
 
 				<form onsubmit={handleSubmit} class="brut-card mt-6 space-y-5 bg-white p-6 sm:p-8">
 					<div>
 						<label class="micro-label" for="email">EMAIL ADDRESS</label>
-						<input id="email" type="email" bind:value={email} autocomplete="email" placeholder="degen@qgr.exchange" class="input-base mt-2 font-mono" />
+						<input id="email" type="email" bind:value={email} autocomplete="email" placeholder="you@example.com" class="input-base mt-2 font-mono" />
 						{#if errors.email}<p class="mt-2 font-mono text-xs font-bold text-blood">!! {errors.email}</p>{/if}
 					</div>
 					<div>
@@ -126,23 +126,23 @@
 					<div class="flex items-center justify-between">
 						<label class="flex cursor-pointer items-center gap-2 text-sm font-bold" for="remember">
 							<input type="checkbox" id="remember" bind:checked={rememberMe} class="h-4 w-4 rounded-none border-2 border-ink accent-[#d4a73a]" />
-							HODL MY SESSION
+							REMEMBER ME
 						</label>
 						<span class="font-mono text-xs text-ink/50">30 DAYS</span>
 					</div>
 					<button type="submit" disabled={isLoading} class="btn-primary w-full !py-4">
 						{#if isLoading}
 							<LoadingSpinner size="sm" />
-							<span class="ml-2">UNLOCKING…</span>
+							<span class="ml-2">LOGGING IN…</span>
 						{:else}
-							UNLOCK VAULT →
+							LOG IN →
 						{/if}
 					</button>
 				</form>
 
-				<p class="mt-6 text-center text-sm">
-					No stack yet?
-					<a href="/signup" class="font-display font-bold underline decoration-gold decoration-2 underline-offset-4 hover:bg-acid">MINT AN ACCOUNT →</a>
+				<p class="mt-6 text-center text-sm break-words">
+					New here?
+					<a href="/signup" class="font-display font-bold underline decoration-gold decoration-2 underline-offset-4 hover:bg-acid">CREATE AN ACCOUNT →</a>
 				</p>
 				<p class="mt-3 text-center font-mono text-[11px] text-ink/50">JWT-SECURED · LIVE MARKET DATA · INSTANT SETTLEMENT</p>
 			</div>

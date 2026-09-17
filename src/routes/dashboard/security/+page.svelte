@@ -93,7 +93,7 @@
 		<div class="flex items-center justify-between">
 			<div>
 				<p class="mb-2 font-medium text-paper-dim">Security Score</p>
-				<h2 class="mb-4 text-5xl font-bold">95/100</h2>
+				<h2 class="mb-4 text-2xl font-bold sm:text-5xl">95/100</h2>
 				<p class="text-paper-dim">Excellent! Your account is well protected.</p>
 			</div>
 			<div class="relative h-32 w-32">
@@ -187,7 +187,7 @@
 						<p class="mt-1 text-sm text-slate-500">{sessions.length} active session{sessions.length !== 1 ? 's' : ''}</p>
 					</div>
 				</div>
-				<div class="divide-y divide-slate-100">
+				<div class="overflow-x-auto divide-y divide-slate-100">
 					{#if loadingSessions}
 						<div class="p-6 text-center text-sm text-slate-400">Loading sessions…</div>
 					{:else if sessions.length === 0}
@@ -208,7 +208,7 @@
 									{/if}
 								</div>
 								<p class="text-xs text-slate-500">Started: {formatDate(session.created_at)}</p>
-								<p class="text-xs text-slate-400 mt-0.5 truncate" title={session.user_agent}>{session.user_agent.slice(0, 60)}{session.user_agent.length > 60 ? '...' : ''}</p>
+								<p class="text-xs text-slate-400 mt-0.5 break-all" title={session.user_agent}>{session.user_agent.slice(0, 60)}{session.user_agent.length > 60 ? '...' : ''}</p>
 							</div>
 						{/each}
 					{/if}

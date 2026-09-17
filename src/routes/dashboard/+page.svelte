@@ -45,8 +45,7 @@
   });
 
   function greeting() {
-    const h = new Date().getHours();
-    return h < 12 ? 'GM' : h < 18 ? 'GA' : 'GN';
+    return 'Hello';
   }
 
   function txGlyph(tx: CryptoTransaction) {
@@ -56,7 +55,7 @@
   $: maxVal = Math.max(1, ...assets.map((a) => a.value_usd));
 </script>
 
-<svelte:head><title>Stack — QGR Investment</title></svelte:head>
+<svelte:head><title>Balance — QGR Investment</title></svelte:head>
 
 {#if loading}
   <div class="flex items-center justify-center py-32"><LoadingSpinner size="lg" /></div>
@@ -73,8 +72,8 @@
     <section class="brut-card-navy p-6 sm:p-8">
       <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p class="micro-label text-gold">{greeting()} — {user?.first_name?.toUpperCase() ?? 'DEGEN'}'S STACK</p>
-          <p class="font-display mt-3 text-5xl font-bold tracking-tight sm:text-6xl">{formatUsd(portfolioTotal)}</p>
+          <p class="micro-label text-gold">{greeting()}, {(user?.first_name ?? 'INVESTOR').toUpperCase()}'S BALANCE</p>
+          <p class="font-display mt-3 text-2xl font-bold tracking-tight sm:text-5xl lg:text-6xl">{formatUsd(portfolioTotal)}</p>
           <p class="mt-2 font-mono text-sm font-bold {portfolioChange >= 0 ? 'text-acid' : 'text-blood'}">
             {portfolioChange >= 0 ? '▲' : '▼'} {Math.abs(portfolioChange).toFixed(2)}% <span class="font-normal text-white/50">/ 24H</span>
           </p>
@@ -86,11 +85,11 @@
           <button class="border-2 border-gold px-3 py-2 font-display text-xs font-bold tracking-widest text-gold hover:bg-gold hover:text-ink" onclick={async () => ((loading = true), await load(), (loading = false))}>↻ REFRESH</button>
         </div>
       </div>
-      <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <a href="/dashboard/wallets" class="border-2 border-white/20 bg-white/5 p-4 hover:border-acid hover:bg-white/10">
           <p class="font-display text-xl font-bold text-acid">⬢</p>
-          <p class="font-display mt-2 text-sm font-bold tracking-widest">VAULT</p>
-          <p class="mt-1 font-mono text-[11px] text-white/50">keys + QRs</p>
+          <p class="font-display mt-2 text-sm font-bold tracking-widest">WALLETS</p>
+          <p class="mt-1 font-mono text-[11px] text-white/50">balances + history</p>
         </a>
         <a href="/dashboard/deposit" class="border-2 border-white/20 bg-white/5 p-4 hover:border-acid hover:bg-white/10">
           <p class="font-display text-xl font-bold text-acid">$</p>
@@ -102,11 +101,6 @@
           <p class="font-display mt-2 text-sm font-bold tracking-widest">LINK WALLET</p>
           <p class="mt-1 font-mono text-[11px]">address only</p>
         </a>
-        <a href="/dashboard/transactions" class="border-2 border-white/20 bg-white/5 p-4 hover:border-acid hover:bg-white/10">
-          <p class="font-display text-xl font-bold text-acid">⛓</p>
-          <p class="font-display mt-2 text-sm font-bold tracking-widest">ONCHAIN</p>
-          <p class="mt-1 font-mono text-[11px] text-white/50">receipts</p>
-        </a>
       </div>
     </section>
 
@@ -115,7 +109,7 @@
       <div class="flex items-center justify-between">
         <div>
           <h2 class="font-display text-lg font-bold tracking-tight">ALLOCATION</h2>
-          <p class="mt-0.5 font-mono text-xs text-ink/50">WHERE THE BAGS SIT</p>
+          <p class="mt-0.5 font-mono text-xs text-ink/50">WHERE YOUR MONEY SITS</p>
         </div>
         <a href="/dashboard/wallets" class="font-display text-xs font-bold underline decoration-gold decoration-2 underline-offset-4 hover:bg-acid">MANAGE →</a>
       </div>
@@ -142,21 +136,21 @@
       <div class="flex items-center justify-between border-b-2 border-ink px-5 py-4">
         <div>
           <h2 class="font-display text-lg font-bold tracking-tight">POSITIONS</h2>
-          <p class="mt-0.5 font-mono text-xs text-ink/50">MARKED TO COINGECKO</p>
+          <p class="mt-0.5 font-mono text-xs text-ink/50">LIVE MARKET PRICES</p>
         </div>
         <a href="/dashboard/deposit" class="font-display text-xs font-bold underline decoration-gold decoration-2 underline-offset-4 hover:bg-acid">FUND →</a>
       </div>
       <div>
         {#each assets as asset}
-          <div class="flex items-center justify-between border-b border-ink/15 px-5 py-4 last:border-0 hover:bg-paper">
-            <div class="flex min-w-0 items-center gap-3">
+          <div class="flex items-center justify-between gap-3 border-b border-ink/15 px-4 py-4 last:border-0 hover:bg-paper sm:px-5">
+            <div class="flex min-w-0 flex-1 items-center gap-3">
               <CoinLogo logo={asset.logo} symbol={asset.symbol} size="h-10 w-10" />
-              <div>
-                <p class="font-display text-sm font-bold">{asset.name.toUpperCase()}</p>
-                <p class="font-mono text-xs text-ink/50">{asset.network} · {formatCrypto(asset.balance, asset.symbol)}</p>
+              <div class="min-w-0">
+                <p class="truncate font-display text-sm font-bold">{asset.name.toUpperCase()}</p>
+                <p class="truncate font-mono text-xs text-ink/50">{asset.network} · {formatCrypto(asset.balance, asset.symbol)}</p>
               </div>
             </div>
-            <div class="text-right">
+            <div class="shrink-0 text-right">
               <p class="font-mono text-sm font-bold">{formatUsd(asset.value_usd)}</p>
               <p class="mt-0.5 font-mono text-xs font-bold {asset.change_24h >= 0 ? 'text-up' : 'text-down'}">{asset.change_24h >= 0 ? '▲' : '▼'}{Math.abs(asset.change_24h).toFixed(2)}%</p>
             </div>
@@ -169,22 +163,22 @@
     <section class="brut-card overflow-hidden bg-white">
       <div class="flex items-center justify-between border-b-2 border-ink px-5 py-4">
         <div>
-          <h2 class="font-display text-lg font-bold tracking-tight">LATEST ONCHAIN</h2>
-          <p class="mt-0.5 font-mono text-xs text-ink/50">SETTLED IN THE QGR LEDGER</p>
+          <h2 class="font-display text-lg font-bold tracking-tight">RECENT ACTIVITY</h2>
+          <p class="mt-0.5 font-mono text-xs text-ink/50">LATEST ACCOUNT MOVEMENTS</p>
         </div>
-        <a href="/dashboard/transactions" class="font-display text-xs font-bold underline decoration-gold decoration-2 underline-offset-4 hover:bg-acid">ALL →</a>
+        <a href="/dashboard/wallets" class="font-display text-xs font-bold underline decoration-gold decoration-2 underline-offset-4 hover:bg-acid">WALLETS →</a>
       </div>
       <div>
         {#each transactions.slice(0, 5) as tx}
-          <div class="flex items-center justify-between px-5 py-4">
-            <div class="flex min-w-0 items-center gap-3">
+          <div class="flex items-center justify-between gap-3 px-4 py-4 sm:px-5">
+            <div class="flex min-w-0 flex-1 items-center gap-3">
               <div class="flex h-10 w-10 items-center justify-center border-2 border-ink bg-paper font-display text-lg font-bold">{txGlyph(tx)}</div>
               <div class="min-w-0">
                 <p class="truncate font-display text-sm font-bold">{tx.description}</p>
                 <p class="truncate font-mono text-xs text-ink/50">{tx.network} · {new Date(tx.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</p>
               </div>
             </div>
-            <div class="ml-3 text-right">
+            <div class="ml-3 shrink-0 text-right">
               <p class="font-mono text-sm font-bold {tx.amount >= 0 ? 'text-up' : 'text-ink'}">{tx.amount >= 0 ? '+' : ''}{formatCrypto(tx.amount, tx.symbol)}</p>
               <span class="mt-1 inline-block border border-ink bg-paper px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase">{tx.status}</span>
             </div>

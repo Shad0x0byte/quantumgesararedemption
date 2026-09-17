@@ -66,7 +66,7 @@
   </div>
 
   <!-- Tabs -->
-  <div class="flex gap-1  border border-slate-100 bg-white p-1.5 shadow-sm w-fit">
+  <div class="flex max-w-full flex-wrap gap-1  border border-slate-100 bg-white p-1.5 shadow-sm w-fit">
     {#each tabs as tab}
       <button
         onclick={() => switchTab(tab.id)}
@@ -190,7 +190,7 @@
 
   <!-- Pagination -->
   {#if !loading && total > limit}
-  <div class="flex items-center justify-between text-sm text-slate-500">
+  <div class="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-500">
     <p>Showing {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of {total}</p>
     <div class="flex gap-2">
       <button

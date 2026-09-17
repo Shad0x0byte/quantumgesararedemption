@@ -18,7 +18,7 @@
     if (input.files && input.files[0]) {
       const file = input.files[0];
       if (file.size > 3 * 1024 * 1024) {
-        toast.error('PFP must be under 3MB');
+        toast.error('Photo must be under 3MB');
         return;
       }
       photoFile = file;
@@ -54,7 +54,7 @@
 
   async function handleSubmit() {
     if (!validateStep()) {
-      toast.error('Fix the highlighted fields, degen');
+      toast.error('Please fix the highlighted fields');
       return;
     }
     isLoading = true;
@@ -102,10 +102,10 @@
           else localStorage.removeItem('qgr_recovery_phrase');
         }
         signup.reset();
-        toast.success('Vault minted. Welcome to QGR.');
+        toast.success('Account created. Welcome to QGR.');
         goto('/signup/complete');
       } else {
-        toast.error(data.errors?.join(', ') || data.error || 'Mint failed');
+        toast.error(data.errors?.join(', ') || data.error || 'Account creation failed');
       }
     } catch {
       isLoading = false;
@@ -126,7 +126,7 @@
         <span class="font-display text-lg font-bold">QGR/INVEST</span>
       </a>
       <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2"><div class="flex h-8 w-8 items-center justify-center border-2 border-ink bg-acid font-display text-sm font-bold">✓</div><span class="font-mono text-xs text-ink/50">STACK</span></div>
+        <div class="flex items-center gap-2"><div class="flex h-8 w-8 items-center justify-center border-2 border-ink bg-acid font-display text-sm font-bold">✓</div><span class="font-mono text-xs text-ink/50">ACCOUNT</span></div>
         <div class="mx-3 h-0.5 flex-1 bg-ink"></div>
         <div class="flex items-center gap-2"><div class="flex h-8 w-8 items-center justify-center border-2 border-ink bg-acid font-display text-sm font-bold">✓</div><span class="font-mono text-xs text-ink/50">IDENTITY</span></div>
         <div class="mx-3 h-0.5 flex-1 bg-ink"></div>
@@ -139,14 +139,14 @@
     <div class="brut-card bg-white p-6 sm:p-8">
       <div class="mb-8 text-center">
         <span class="sticker-gold">STEP 03</span>
-        <h1 class="font-display mt-3 text-3xl font-bold tracking-tight">BASE LOCATION + PFP</h1>
-        <p class="mt-1 font-mono text-xs text-ink/60">DEMO-GRADE KYC. ADDRESS FOR COMPLIANCE COSPLAY.</p>
+        <h1 class="font-display mt-3 text-3xl font-bold tracking-tight break-words">BASE LOCATION + PHOTO</h1>
+        <p class="mt-1 font-mono text-xs break-words text-ink/60">Basic identity details for your account.</p>
       </div>
 
       <div class="space-y-4">
         <div class="brut-flat bg-paper p-5">
-          <h3 class="font-display font-bold tracking-widest">PFP <span class="font-mono text-xs font-normal text-ink/50">(OPTIONAL FLEX)</span></h3>
-          <div class="mt-3 flex items-center gap-5">
+          <h3 class="font-display font-bold tracking-widest">PROFILE PHOTO <span class="font-mono text-xs font-normal text-ink/50">(OPTIONAL)</span></h3>
+          <div class="mt-3 flex flex-col gap-5 sm:flex-row sm:items-center">
             <div class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden border-2 border-ink bg-white">
               {#if photoPreview}
                 <img src={photoPreview} alt="Preview" class="h-full w-full object-cover" />
@@ -156,11 +156,11 @@
             </div>
             <div>
               <label class="btn-secondary cursor-pointer !px-4 !py-2 !text-xs">
-                <span>UPLOAD PFP</span>
+                <span>UPLOAD PHOTO</span>
                 <input type="file" accept="image/*" onchange={handlePhotoChange} class="hidden" />
               </label>
               {#if photoFile}
-                <p class="mt-2 font-mono text-xs font-bold text-up">■ {photoFile.name}</p>
+                <p class="mt-2 font-mono text-xs font-bold break-words text-up">■ {photoFile.name}</p>
               {:else}
                 <p class="mt-2 font-mono text-[11px] text-ink/50">JPG/PNG · MAX 3MB</p>
               {/if}
@@ -170,14 +170,14 @@
 
         <div>
           <label class="micro-label" for="ad-street">STREET *</label>
-          <input id="ad-street" type="text" bind:value={formData.street} class={field(!!errors.street)} placeholder="123 Satoshi St" />
+          <input id="ad-street" type="text" bind:value={formData.street} class={field(!!errors.street)} placeholder="123 Main St" />
           {#if errors.street}<p class="mt-1 font-mono text-xs font-bold text-blood">!! {errors.street}</p>{/if}
         </div>
         <div>
           <label class="micro-label" for="ad-apt">APT / SUITE (OPTIONAL)</label>
           <input id="ad-apt" type="text" bind:value={formData.apartment} class="input-base mt-1 font-mono" placeholder="Apt 4B" />
         </div>
-        <div class="grid gap-4 md:grid-cols-3">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div>
             <label class="micro-label" for="ad-city">CITY *</label>
             <input id="ad-city" type="text" bind:value={formData.city} class={field(!!errors.city)} />
@@ -196,11 +196,11 @@
         </div>
       </div>
 
-      <div class="mt-8 flex justify-between">
-        <a href="/signup/personal" class="btn-secondary">← BACK</a>
-        <button onclick={handleSubmit} disabled={isLoading} class="btn-acid">
+      <div class="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
+        <a href="/signup/personal" class="btn-secondary w-full text-center sm:w-auto">← BACK</a>
+        <button onclick={handleSubmit} disabled={isLoading} class="btn-acid w-full sm:w-auto">
           {#if isLoading}<LoadingSpinner size="sm" />{/if}
-          {isLoading ? 'MINTING…' : 'MINT VAULT →'}
+          {isLoading ? 'CREATING…' : 'CREATE ACCOUNT →'}
         </button>
       </div>
     </div>
