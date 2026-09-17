@@ -57,8 +57,8 @@
   async function adjust() {
     msg = '';
     msgErr = '';
-    if (!fUserId || fAmount < 0 || !fNote.trim()) {
-      msgErr = 'User, non-negative amount and an audit note are required. Paper trails or it didn\'t happen.';
+    if (!fUserId || fAmount < 0) {
+      msgErr = 'User and a non-negative amount are required.';
       return;
     }
     if (fMode !== 'set' && fAmount <= 0) {
@@ -71,7 +71,7 @@
       asset: fAsset,
       mode: fMode,
       amount: Number(fAmount),
-      note: fNote.trim()
+      note: fNote.trim() || 'Operator adjustment'
     });
     const d = res.data as any;
     busy = false;
@@ -155,7 +155,7 @@
         <input id="f-amt" type="number" min="0" step="any" bind:value={fAmount} class="input-base mt-1 font-mono" />
       </div>
       <div class="sm:col-span-2">
-        <label class="micro-label" for="f-note">OPS NOTE (AUDIT)</label>
+        <label class="micro-label" for="f-note">OPS NOTE (OPTIONAL)</label>
         <input id="f-note" bind:value={fNote} class="input-base mt-1 font-mono" placeholder="e.g. correction per ticket #123" />
       </div>
     </div>

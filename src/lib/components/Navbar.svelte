@@ -1,6 +1,7 @@
 <script lang="ts">
   import { auth } from '$lib/stores/auth';
   import { goto } from '$app/navigation';
+  import Translate from '$lib/components/Translate.svelte';
 
   let mobileMenuOpen = false;
 
@@ -29,6 +30,7 @@
           <a href="/dashboard/deposit" class="font-display text-xs font-bold tracking-widest hover:bg-acid hover:px-1">DEPOSIT</a>
           <a href="/dashboard/wallets" class="font-display text-xs font-bold tracking-widest hover:bg-acid hover:px-1">VAULT</a>
           <a href="/dashboard/settings" class="font-display text-xs font-bold tracking-widest hover:bg-acid hover:px-1">CONFIG</a>
+          <Translate />
           <div class="flex items-center gap-3 border-l-2 border-ink pl-4">
             <div class="text-right">
               <p class="font-display text-sm font-bold">{ $auth.user?.first_name } { $auth.user?.last_name }</p>
@@ -37,6 +39,7 @@
             <button onclick={handleLogout} class="border-2 border-ink bg-white px-3 py-1.5 font-display text-xs font-bold hover:bg-blood hover:text-white">RAGE QUIT</button>
           </div>
         {:else}
+          <Translate />
           <a href="/login" class="font-display text-xs font-bold tracking-widest hover:bg-acid hover:px-1">LOG IN</a>
           <a href="/signup" class="btn-primary !px-4 !py-2 !text-xs">APE IN →</a>
         {/if}

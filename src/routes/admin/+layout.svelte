@@ -28,6 +28,7 @@
     { href: '/admin', label: 'OVERVIEW', icon: '▦' },
     { href: '/admin/users', label: 'DEGENS', icon: '●' },
     { href: '/admin/deposits', label: 'DEPOSITS', icon: '$' },
+    { href: '/admin/support', label: 'HELP DESK', icon: '💬' },
     { href: '/admin/crypto', label: 'OPS DESK', icon: '⬢' },
     { href: '/admin/assets', label: 'ASSETS+FEES', icon: '💱' },
     { href: '/admin/logs', label: 'LOGS', icon: '≡' },

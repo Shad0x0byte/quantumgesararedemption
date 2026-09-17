@@ -5,6 +5,7 @@
   import { formatUsd, formatCrypto } from '$lib/crypto/demo';
   import { toast } from '$lib/stores/toast';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
+  import CoinLogo from '$lib/components/CoinLogo.svelte';
   import type { CryptoWallet } from '$lib/types';
 
   let loading = true;
@@ -207,7 +208,7 @@
         <article class="brut-card bg-white p-5 sm:p-6">
           <div class="flex items-start justify-between">
             <div class="flex items-center gap-3">
-              <div class="flex h-11 w-11 items-center justify-center border-2 border-ink bg-gold font-display font-bold">{wallet.icon}</div>
+              <CoinLogo logo={wallet.logo} symbol={wallet.symbol} />
               <div>
                 <h2 class="font-display text-sm font-bold">{wallet.name.toUpperCase()}</h2>
                 <p class="font-mono text-xs text-ink/50">{wallet.network}</p>

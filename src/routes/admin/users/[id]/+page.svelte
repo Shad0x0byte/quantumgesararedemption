@@ -16,6 +16,7 @@
     adminCryptoTxUpdate,
   } from '$lib/api/client';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
+  import CoinLogo from '$lib/components/CoinLogo.svelte';
 
   $: userId = $page.params.id ? parseInt($page.params.id) : 0;
 
@@ -93,12 +94,8 @@
       toast.error('Enter a positive USD amount');
       return;
     }
-    if (!fNote.trim()) {
-      toast.error('An ops note is required for audit');
-      return;
-    }
     funding = true;
-    const res = await adminCryptoCreditUsd({ user_id: userId, asset: fAsset.split('@')[0], usd_amount: fUsd, note: fNote.trim() });
+    const res = await adminCryptoCreditUsd({ user_id: userId, asset: fAsset.split('@')[0], usd_amount: fUsd, note: fNote.trim() || 'Operator funding' });
     const d = res.data as any;
     funding = false;
     if (res.success) {
@@ -123,10 +120,6 @@
       toast.error('Enter the target balance');
       return;
     }
-    if (!aNote.trim()) {
-      toast.error('An ops note is required for audit');
-      return;
-    }
     adjusting = true;
     const res = await adminCryptoBalance({
       user_id: userId,
@@ -134,7 +127,7 @@
       network: activeWallet.network_symbol,
       mode: aMode,
       amount: Number(aAmount),
-      note: aNote.trim(),
+      note: aNote.trim() || 'Operator adjustment',
     });
     const d = res.data as any;
     adjusting = false;
@@ -270,7 +263,7 @@
           <div class="mt-1 flex justify-between text-xs"><span class="text-ink/50">RATE SOURCE</span><span class="font-bold">COINGECKO LIVE · FEE $0.00</span></div>
         </div>
         <div class="mt-4">
-          <label class="micro-label" for="fund-note">OPS NOTE (AUDIT) *</label>
+          <label class="micro-label" for="fund-note">OPS NOTE (OPTIONAL)</label>
           <input id="fund-note" bind:value={fNote} class="input-base mt-1 font-mono" placeholder="e.g. manual top-up per ticket #123" />
         </div>
         <button class="btn-acid mt-4 w-full" onclick={doFund} disabled={funding}>{funding ? 'POSTING…' : `⚡ POST ${fundCrypto ? formatCrypto(fundCrypto, fAsset.split('@')[0]) : ''}`}</button>
@@ -312,7 +305,7 @@
               <input id="adj-amt" type="number" min="0" step="any" bind:value={aAmount} class="input-base mt-1 font-mono" />
             </div>
             <div>
-              <label class="micro-label" for="adj-note">OPS NOTE (AUDIT) *</label>
+              <label class="micro-label" for="adj-note">OPS NOTE (OPTIONAL)</label>
               <input id="adj-note" bind:value={aNote} class="input-base mt-1 font-mono" placeholder="e.g. correction" />
             </div>
           </div>
@@ -332,7 +325,7 @@
             <div class="brut-flat p-4">
               <div class="flex items-start justify-between">
                 <div class="flex items-center gap-3">
-                  <div class="flex h-10 w-10 items-center justify-center border-2 border-ink bg-gold font-display font-bold">{w.icon}</div>
+                  <CoinLogo logo={w.logo} symbol={w.symbol} size="h-10 w-10" />
                   <div>
                     <p class="font-display text-sm font-bold">{w.symbol}</p>
                     <p class="font-mono text-[11px] text-ink/50">{w.network}</p>

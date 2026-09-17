@@ -5,6 +5,7 @@
   import { onMount, onDestroy } from 'svelte';
   import { apiRequest } from '$lib/api/client';
   import DashboardFooter from '$lib/components/DashboardFooter.svelte';
+  import Translate from '$lib/components/Translate.svelte';
   import type { AuthState } from '$lib/types';
 
   interface NavItem {
@@ -159,6 +160,7 @@
           </p>
         </div>
         <span class="sticker hidden !text-[9px] sm:inline-block">LIVE PRICES</span>
+        <Translate />
         <a href="/dashboard/deposit" class="btn-primary !px-4 !py-2 !text-xs">DEPOSIT $</a>
       </header>
 

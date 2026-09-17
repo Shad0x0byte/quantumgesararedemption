@@ -4,6 +4,7 @@
   import { getCryptoDashboard } from '$lib/api/client';
   import { cryptoAssets, cryptoTransactions, formatUsd, formatCrypto } from '$lib/crypto/demo';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
+  import CoinLogo from '$lib/components/CoinLogo.svelte';
   import type { CryptoAsset, CryptoTransaction } from '$lib/types';
 
   let loading = true;
@@ -149,7 +150,7 @@
         {#each assets as asset}
           <div class="flex items-center justify-between border-b border-ink/15 px-5 py-4 last:border-0 hover:bg-paper">
             <div class="flex min-w-0 items-center gap-3">
-              <div class="flex h-10 w-10 items-center justify-center border-2 border-ink bg-gold font-display font-bold">{asset.icon}</div>
+              <CoinLogo logo={asset.logo} symbol={asset.symbol} size="h-10 w-10" />
               <div>
                 <p class="font-display text-sm font-bold">{asset.name.toUpperCase()}</p>
                 <p class="font-mono text-xs text-ink/50">{asset.network} · {formatCrypto(asset.balance, asset.symbol)}</p>

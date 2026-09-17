@@ -364,3 +364,23 @@ export const getAdminDeposits = (status = 'pending') =>
 
 export const reviewAdminDeposit = (deposit_id: number, action: 'approve' | 'reject', note?: string) =>
   apiRequest('/admin/deposits.php', { method: 'POST', body: JSON.stringify({ deposit_id, action, note }) });
+
+// ── Help-desk chat ──────────────────────────────────────────────────────────
+
+export const getSupportThread = () =>
+  apiRequest('/support/thread.php', { method: 'GET' });
+
+export const sendSupportMessage = (body: string) =>
+  apiRequest('/support/send.php', { method: 'POST', body: JSON.stringify({ body }) });
+
+export const getAdminSupportThreads = (status = 'open') =>
+  apiRequest(`/admin/support.php?status=${encodeURIComponent(status)}`, { method: 'GET' });
+
+export const getAdminSupportThread = (thread_id: number) =>
+  apiRequest(`/admin/support.php?thread_id=${thread_id}`, { method: 'GET' });
+
+export const replyAdminSupport = (thread_id: number, body: string) =>
+  apiRequest('/admin/support.php', { method: 'POST', body: JSON.stringify({ thread_id, body }) });
+
+export const setAdminSupportStatus = (thread_id: number, action: 'close' | 'reopen') =>
+  apiRequest('/admin/support.php', { method: 'POST', body: JSON.stringify({ thread_id, action }) });
