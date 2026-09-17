@@ -46,6 +46,8 @@
 
   const navItems: NavItem[] = [
     { href: '/dashboard', label: 'STACK', icon: '▦' },
+    { href: '/dashboard/deposit', label: 'DEPOSIT', icon: '$' },
+    { href: '/dashboard/external', label: 'LINK WALLET', icon: '🔗' },
     { href: '/dashboard/wallets', label: 'VAULT', icon: '⬢' },
     { href: '/dashboard/markets', label: 'TICKER', icon: '▲' },
     { href: '/dashboard/swap', label: 'SWAP', icon: '⇄' },
@@ -56,6 +58,7 @@
 
   const mobileNavItems: NavItem[] = [
     { href: '/dashboard', label: 'STACK', icon: '▦' },
+    { href: '/dashboard/deposit', label: 'DEPOSIT', icon: '$' },
     { href: '/dashboard/wallets', label: 'VAULT', icon: '⬢' },
     { href: '/dashboard/swap', label: 'SWAP', icon: '⇄' },
     { href: '/dashboard/markets', label: 'TICKER', icon: '▲' },

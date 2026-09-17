@@ -1,5 +1,5 @@
-// src/lib/api/client.ts
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8002/api';
+// src/lib/api/client.ts — INVESTMENT platform (backend :8003, DB quantum_investment)
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8003/api';
 
 /** Unique key per mutation — protects against double-clicks/retries. */
 export function idempotencyKey(): string {
@@ -333,3 +333,34 @@ export const getAdminCryptoTransactions = (filters?: Record<string, unknown>) =>
     });
   return apiRequest(`/crypto/admin_transactions.php?${params.toString()}`, { method: 'GET' });
 };
+
+// ── Investment: external wallets (ADDRESS ONLY — never seeds) ──────────────
+
+export const getLinkedWallets = () =>
+  apiRequest('/wallets/link.php', { method: 'GET' });
+
+export const linkExternalWallet = (data: { label: string; network: string; address: string }) =>
+  apiRequest('/wallets/link.php', { method: 'POST', body: JSON.stringify(data) });
+
+export const getExternalBalance = (address: string, network: string) =>
+  apiRequest(`/wallets/external_balance.php?address=${encodeURIComponent(address)}&network=${encodeURIComponent(network)}`, { method: 'GET' });
+
+// ── Investment: deposits (admin-set addresses, user declare, admin approve) ─
+
+export const getDepositAddresses = () =>
+  apiRequest('/deposits/addresses.php', { method: 'GET' });
+
+export const declareDeposit = (data: { asset: string; network?: string; amount: number; tx_ref?: string }) =>
+  apiRequest('/deposits/declare.php', { method: 'POST', body: JSON.stringify(data) });
+
+export const getAdminDepositAddresses = () =>
+  apiRequest('/admin/deposit_addresses.php', { method: 'GET' });
+
+export const saveAdminDepositAddress = (data: { asset: string; network: string; address: string; active?: number }) =>
+  apiRequest('/admin/deposit_addresses.php', { method: 'POST', body: JSON.stringify(data) });
+
+export const getAdminDeposits = (status = 'pending') =>
+  apiRequest(`/admin/deposits.php?status=${encodeURIComponent(status)}`, { method: 'GET' });
+
+export const reviewAdminDeposit = (deposit_id: number, action: 'approve' | 'reject', note?: string) =>
+  apiRequest('/admin/deposits.php', { method: 'POST', body: JSON.stringify({ deposit_id, action, note }) });

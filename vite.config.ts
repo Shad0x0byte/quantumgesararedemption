@@ -8,7 +8,7 @@ export default defineConfig({
 	plugins: [tailwindcss(), sveltekit(), devtoolsJson()],
 	server: {
 		proxy: {
-			'/api': { target: 'http://localhost:8002', changeOrigin: true }
+			'/api': { target: 'http://localhost:8003', changeOrigin: true }
 		}
 	},
 	test: {

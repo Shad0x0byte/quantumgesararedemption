@@ -98,7 +98,7 @@
 				</div>
 				<span class="sticker-gold">LOG IN</span>
 				<h2 class="font-display mt-3 text-3xl font-bold tracking-tight">BACK TO THE TERMINAL</h2>
-				<p class="mt-1 text-sm text-ink/60">Direct account access — email + password.</p>
+				<p class="mt-1 text-sm text-ink/60">Direct account access — email + password <span class="font-bold">or recovery phrase</span>.</p>
 
 				{#if errors.general}
 					<div class="brut-flat mt-6 border-blood bg-white p-4">
@@ -114,7 +114,7 @@
 						{#if errors.email}<p class="mt-2 font-mono text-xs font-bold text-blood">!! {errors.email}</p>{/if}
 					</div>
 					<div>
-						<label class="micro-label" for="pw">PASSWORD</label>
+						<label class="micro-label" for="pw">PASSWORD OR 12-WORD RECOVERY PHRASE</label>
 						<div class="relative mt-2">
 							<input id="pw" type={showPassword ? 'text' : 'password'} bind:value={password} autocomplete="current-password" placeholder="••••••••" class="input-base pr-12 font-mono" />
 							<button type="button" onclick={() => (showPassword = !showPassword)} class="absolute top-1/2 right-3 -translate-y-1/2 border border-ink bg-paper px-1.5 font-mono text-[11px] font-bold" aria-label={showPassword ? 'Hide password' : 'Show password'}>

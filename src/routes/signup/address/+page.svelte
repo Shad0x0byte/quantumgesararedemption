@@ -85,7 +85,7 @@
     if (photoFile) formPayload.append('picture', photoFile);
 
     try {
-      const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8002/api';
+      const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8003/api';
       const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
       const headers: Record<string, string> = {};
       if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -96,6 +96,11 @@
       isLoading = false;
       if (data.success && data.data) {
         auth.setAuth(data.data.user, data.data.token);
+        // Platform recovery phrase — shown ONCE on the next screen. Never stored server-side in plain text.
+        if (typeof window !== 'undefined') {
+          if (data.data.recovery_phrase) localStorage.setItem('qgr_recovery_phrase', data.data.recovery_phrase);
+          else localStorage.removeItem('qgr_recovery_phrase');
+        }
         signup.reset();
         toast.success('Vault minted. Welcome to QGR.');
         goto('/signup/complete');
