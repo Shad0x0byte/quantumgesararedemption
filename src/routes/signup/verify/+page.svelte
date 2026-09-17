@@ -56,7 +56,7 @@
 </script>
 
 <svelte:head>
-  <title>Verify Humanity — QGR Exchange</title>
+  <title>Verify Humanity — QGR Investment</title>
 </svelte:head>
 
 <div class="paper-grain flex min-h-screen items-center justify-center bg-paper px-4 py-12 text-ink">

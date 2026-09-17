@@ -48,7 +48,7 @@
 	>
 		<div class="flex items-center gap-2">
 			<span class="text-xl">🏦</span>
-			<span class="font-bold">QGR Exchange</span>
+			<span class="font-bold">QGR Investment</span>
 		</div>
 		<button onclick={() => (sidebarOpen = !sidebarOpen)} class="p-2 text-white">
 			{#if sidebarOpen}
@@ -85,7 +85,7 @@
 					<div class="bg-accent flex h-10 w-10 items-center justify-center rounded-lg">
 						<span class="text-xl font-bold">🏦</span>
 					</div>
-					<span class="text-xl font-bold">QGR Exchange</span>
+					<span class="text-xl font-bold">QGR Investment</span>
 				</a>
 
 				<!-- User Info -->

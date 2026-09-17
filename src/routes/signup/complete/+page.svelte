@@ -37,7 +37,7 @@
   }
 </script>
 
-<svelte:head><title>Vault Minted — QGR Exchange</title></svelte:head>
+<svelte:head><title>Vault Minted — QGR Investment</title></svelte:head>
 
 <div class="paper-grain flex min-h-screen items-center justify-center bg-paper px-4 py-12 text-ink">
   <div class="w-full max-w-md text-center">

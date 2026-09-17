@@ -55,7 +55,7 @@
 </script>
 
 <svelte:head>
-  <title>Activity Logs — QGR Exchange Admin</title>
+  <title>Activity Logs — QGR Investment Admin</title>
 </svelte:head>
 
 <div class="space-y-6">

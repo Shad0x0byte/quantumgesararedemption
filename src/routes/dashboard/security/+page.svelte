@@ -80,7 +80,7 @@
 	}
 </script>
 
-<svelte:head><title>Security - QGR Exchange</title></svelte:head>
+<svelte:head><title>Security - QGR Investment</title></svelte:head>
 
 <div>
 	<div class="mb-8">

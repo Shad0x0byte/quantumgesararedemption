@@ -60,7 +60,7 @@
 </script>
 
 <svelte:head>
-	<title>Enter the Vault — QGR Exchange</title>
+	<title>Enter the Vault — QGR Investment</title>
 </svelte:head>
 
 <div class="paper-grain flex min-h-screen bg-paper text-ink">
@@ -68,7 +68,7 @@
 	<div class="hidden w-1/2 shrink-0 flex-col justify-between border-r-2 border-ink bg-ink p-10 text-white lg:flex">
 		<a href="/" class="flex items-center gap-2.5">
 			<img src="/qgr-mark.svg" alt="QGR" class="h-10 w-10 border-2 border-gold bg-gold" />
-			<span class="font-display text-xl font-bold">QGR/EXCHANGE</span>
+			<span class="font-display text-xl font-bold">QGR/INVEST</span>
 		</a>
 		<div>
 			<span class="sticker">SESSION 02</span>
@@ -93,7 +93,7 @@
 				<div class="mb-6 lg:hidden">
 					<a href="/" class="flex items-center gap-2">
 						<img src="/qgr-mark.svg" alt="QGR" class="h-9 w-9 border-2 border-ink bg-gold" />
-						<span class="font-display text-lg font-bold">QGR/EXCHANGE</span>
+						<span class="font-display text-lg font-bold">QGR/INVEST</span>
 					</a>
 				</div>
 				<span class="sticker-gold">LOG IN</span>

@@ -1,9 +1,9 @@
-# QGR Exchange Brand Assets
+# QGR Investment Brand Assets
 
 Canonical identity:
 
 - Quantum Gesara Redemption
-- QGR Exchange
+- QGR Investment
 - quantumgesararedemption.com
 - support@quantumgesararedemption.com
 

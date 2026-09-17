@@ -30,8 +30,6 @@
     { href: '/admin/deposits', label: 'DEPOSITS', icon: '$' },
     { href: '/admin/crypto', label: 'OPS DESK', icon: '⬢' },
     { href: '/admin/assets', label: 'ASSETS+FEES', icon: '💱' },
-    { href: '/admin/transactions', label: 'LEDGER', icon: '⛓' },
-    { href: '/admin/cards', label: 'CARDS', icon: '▬' },
     { href: '/admin/logs', label: 'LOGS', icon: '≡' },
     { href: '/admin/settings', label: 'CONFIG', icon: '⚙' }
   ];
@@ -60,7 +58,7 @@
             <a href="/admin" class="flex items-center gap-3">
               <img src="/qgr-mark.svg" alt="QGR" class="h-12 w-12 border-2 border-gold bg-gold" />
               <div>
-                <span class="block font-display text-xl font-bold tracking-tight">QGR/EXCHANGE</span>
+                <span class="block font-display text-xl font-bold tracking-tight">QGR/INVEST</span>
                 <span class="sticker-blood !text-[9px]">CONTROL ROOM</span>
               </div>
             </a>

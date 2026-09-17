@@ -1,5 +1,5 @@
 // src/lib/types/index.ts
-// Central type definitions for QGR Exchange frontend.
+// Central type definitions for QGR Investment frontend.
 // Keep this file as the single source of truth — do not define these elsewhere.
 
 export interface User {

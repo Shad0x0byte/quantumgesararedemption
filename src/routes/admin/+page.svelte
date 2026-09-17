@@ -27,7 +27,7 @@
   }
 </script>
 
-<svelte:head><title>Admin Overview — QGR Exchange</title></svelte:head>
+<svelte:head><title>Admin Overview — QGR Investment</title></svelte:head>
 
 {#if loading}
   <div class="flex items-center justify-center py-32"><LoadingSpinner size="lg" /></div>
@@ -110,7 +110,7 @@
     <div class=" border border-slate-100 bg-white shadow-sm overflow-hidden">
       <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4">
         <h2 class="font-bold text-slate-900">Recent Transactions</h2>
-        <a href="/admin/transactions" class="text-sm font-medium text-red-500 hover:underline">View all →</a>
+        <a href="/admin/crypto" class="text-sm font-medium text-red-500 hover:underline">View all →</a>
       </div>
       {#if recentTx.length === 0}
         <p class="px-6 py-8 text-center text-sm text-slate-500">No transactions yet.</p>
@@ -134,7 +134,7 @@
 
   <!-- Quick links -->
   <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-    {#each [['/admin/users','👥','Users'],['/admin/transactions','📋','Transactions'],['/admin/users','➕','Create User'],['/admin/users','🔍','Search']] as [href,icon,label]}
+    {#each [['/admin/users','👥','Users'],['/admin/deposits','💰','Deposits'],['/admin/users','➕','Create User'],['/admin/crypto','🔍','Ops Desk']] as [href,icon,label]}
       <a {href} class="flex flex-col items-center gap-2  border border-slate-100 bg-white p-5 shadow-sm hover:border-red-200 hover:shadow-md transition-all">
         <span class="text-2xl">{icon}</span>
         <span class="text-sm font-medium text-slate-700">{label}</span>

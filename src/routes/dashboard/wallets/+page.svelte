@@ -173,7 +173,7 @@
   });
 </script>
 
-<svelte:head><title>Vault — QGR Exchange</title></svelte:head>
+<svelte:head><title>Vault — QGR Investment</title></svelte:head>
 
 {#if loading}
   <div class="flex items-center justify-center py-32"><LoadingSpinner size="lg" /></div>

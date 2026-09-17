@@ -89,14 +89,14 @@
   const field = (hasErr: boolean) => `input-base mt-1 font-mono ${hasErr ? '!border-blood' : ''}`;
 </script>
 
-<svelte:head><title>Mint Identity — QGR Exchange</title></svelte:head>
+<svelte:head><title>Mint Identity — QGR Investment</title></svelte:head>
 
 <div class="paper-grain min-h-screen bg-paper text-ink">
   <header class="border-b-2 border-ink bg-paper">
     <div class="mx-auto max-w-3xl px-4 py-6 sm:px-6 lg:px-8">
       <a href="/" class="mb-4 flex items-center gap-2">
         <img src="/qgr-mark.svg" alt="QGR" class="h-8 w-8 border-2 border-ink bg-gold" />
-        <span class="font-display text-lg font-bold">QGR/EXCHANGE</span>
+        <span class="font-display text-lg font-bold">QGR/INVEST</span>
       </a>
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2"><div class="flex h-8 w-8 items-center justify-center border-2 border-ink bg-acid font-display text-sm font-bold">✓</div><span class="font-mono text-xs text-ink/50">STACK</span></div>

@@ -47,7 +47,7 @@
 </script>
 
 <svelte:head>
-  <title>Admin Settings — QGR Exchange</title>
+  <title>Admin Settings — QGR Investment</title>
 </svelte:head>
 
 <div class="space-y-8">

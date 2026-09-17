@@ -17,8 +17,8 @@
         <a href="/" class="flex items-center gap-2">
           <img src="/qgr-mark.svg" alt="QGR" class="h-10 w-10 border-2 border-ink bg-gold" />
           <div>
-            <span class="font-display block text-xl font-bold tracking-tight">QGR/EXCHANGE</span>
-            <span class="-mt-1 block font-mono text-[10px] text-gold-deep">STACK · SWAP · HODL</span>
+            <span class="font-display block text-xl font-bold tracking-tight">QGR/INVEST</span>
+            <span class="-mt-1 block font-mono text-[10px] text-gold-deep">DEPOSIT · LINK · GROW</span>
           </div>
         </a>
       </div>
@@ -26,8 +26,8 @@
       <div class="hidden items-center gap-6 md:flex">
         {#if $auth.isAuthenticated}
           <a href="/dashboard" class="font-display text-xs font-bold tracking-widest hover:bg-acid hover:px-1">STACK</a>
+          <a href="/dashboard/deposit" class="font-display text-xs font-bold tracking-widest hover:bg-acid hover:px-1">DEPOSIT</a>
           <a href="/dashboard/wallets" class="font-display text-xs font-bold tracking-widest hover:bg-acid hover:px-1">VAULT</a>
-          <a href="/dashboard/swap" class="font-display text-xs font-bold tracking-widest hover:bg-acid hover:px-1">SWAP</a>
           <a href="/dashboard/settings" class="font-display text-xs font-bold tracking-widest hover:bg-acid hover:px-1">CONFIG</a>
           <div class="flex items-center gap-3 border-l-2 border-ink pl-4">
             <div class="text-right">
@@ -55,8 +55,8 @@
       <div class="space-y-1 px-4 py-4">
         {#if $auth.isAuthenticated}
           <a href="/dashboard" class="block py-2 font-display text-sm font-bold tracking-widest">STACK</a>
+          <a href="/dashboard/deposit" class="block py-2 font-display text-sm font-bold tracking-widest">DEPOSIT</a>
           <a href="/dashboard/wallets" class="block py-2 font-display text-sm font-bold tracking-widest">VAULT</a>
-          <a href="/dashboard/swap" class="block py-2 font-display text-sm font-bold tracking-widest">SWAP</a>
           <a href="/dashboard/settings" class="block py-2 font-display text-sm font-bold tracking-widest">CONFIG</a>
           <button onclick={handleLogout} class="block w-full py-2 text-left font-display text-sm font-bold text-blood">RAGE QUIT</button>
         {:else}

@@ -55,7 +55,7 @@
   $: maxVal = Math.max(1, ...assets.map((a) => a.value_usd));
 </script>
 
-<svelte:head><title>Stack — QGR Exchange</title></svelte:head>
+<svelte:head><title>Stack — QGR Investment</title></svelte:head>
 
 {#if loading}
   <div class="flex items-center justify-center py-32"><LoadingSpinner size="lg" /></div>
@@ -91,15 +91,15 @@
           <p class="font-display mt-2 text-sm font-bold tracking-widest">VAULT</p>
           <p class="mt-1 font-mono text-[11px] text-white/50">keys + QRs</p>
         </a>
-        <a href="/dashboard/markets" class="border-2 border-white/20 bg-white/5 p-4 hover:border-acid hover:bg-white/10">
-          <p class="font-display text-xl font-bold text-acid">▲</p>
-          <p class="font-display mt-2 text-sm font-bold tracking-widest">TICKER</p>
-          <p class="mt-1 font-mono text-[11px] text-white/50">ape in/out</p>
+        <a href="/dashboard/deposit" class="border-2 border-white/20 bg-white/5 p-4 hover:border-acid hover:bg-white/10">
+          <p class="font-display text-xl font-bold text-acid">$</p>
+          <p class="font-display mt-2 text-sm font-bold tracking-widest">DEPOSIT</p>
+          <p class="mt-1 font-mono text-[11px] text-white/50">fund portfolio</p>
         </a>
-        <a href="/dashboard/swap" class="border-2 border-gold bg-gold p-4 text-ink hover:bg-acid">
-          <p class="font-display text-xl font-bold">⇄</p>
-          <p class="font-display mt-2 text-sm font-bold tracking-widest">SWAP</p>
-          <p class="mt-1 font-mono text-[11px]">0.35% fee</p>
+        <a href="/dashboard/external" class="border-2 border-gold bg-gold p-4 text-ink hover:bg-acid">
+          <p class="font-display text-xl font-bold">🔗</p>
+          <p class="font-display mt-2 text-sm font-bold tracking-widest">LINK WALLET</p>
+          <p class="mt-1 font-mono text-[11px]">address only</p>
         </a>
         <a href="/dashboard/transactions" class="border-2 border-white/20 bg-white/5 p-4 hover:border-acid hover:bg-white/10">
           <p class="font-display text-xl font-bold text-acid">⛓</p>
@@ -143,7 +143,7 @@
           <h2 class="font-display text-lg font-bold tracking-tight">POSITIONS</h2>
           <p class="mt-0.5 font-mono text-xs text-ink/50">MARKED TO COINGECKO</p>
         </div>
-        <a href="/dashboard/markets" class="font-display text-xs font-bold underline decoration-gold decoration-2 underline-offset-4 hover:bg-acid">FULL TICKER →</a>
+        <a href="/dashboard/deposit" class="font-display text-xs font-bold underline decoration-gold decoration-2 underline-offset-4 hover:bg-acid">FUND →</a>
       </div>
       <div>
         {#each assets as asset}

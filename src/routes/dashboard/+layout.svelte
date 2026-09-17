@@ -49,8 +49,6 @@
     { href: '/dashboard/deposit', label: 'DEPOSIT', icon: '$' },
     { href: '/dashboard/external', label: 'LINK WALLET', icon: '🔗' },
     { href: '/dashboard/wallets', label: 'VAULT', icon: '⬢' },
-    { href: '/dashboard/markets', label: 'TICKER', icon: '▲' },
-    { href: '/dashboard/swap', label: 'SWAP', icon: '⇄' },
     { href: '/dashboard/transactions', label: 'ONCHAIN', icon: '⛓' },
     { href: '/dashboard/security', label: 'OPSEC', icon: '#' },
     { href: '/dashboard/settings', label: 'CONFIG', icon: '⚙' }
@@ -60,8 +58,7 @@
     { href: '/dashboard', label: 'STACK', icon: '▦' },
     { href: '/dashboard/deposit', label: 'DEPOSIT', icon: '$' },
     { href: '/dashboard/wallets', label: 'VAULT', icon: '⬢' },
-    { href: '/dashboard/swap', label: 'SWAP', icon: '⇄' },
-    { href: '/dashboard/markets', label: 'TICKER', icon: '▲' },
+    { href: '/dashboard/external', label: 'LINK', icon: '🔗' },
     { href: '/dashboard/transactions', label: 'ONCHAIN', icon: '⛓' }
   ];
 
@@ -98,7 +95,7 @@
       <div class="flex h-16 items-center gap-3 border-b-2 border-gold/40 px-5">
         <img src="/qgr-mark.svg" alt="QGR" class="h-9 w-9 border-2 border-gold bg-gold" />
         <div>
-          <p class="font-display text-base font-bold tracking-tight">QGR/EXCHANGE</p>
+          <p class="font-display text-base font-bold tracking-tight">QGR/INVEST</p>
           <p class="micro-label !text-[9px] text-gold">SECURE LEDGER</p>
         </div>
         <button class="ml-auto border border-white/20 p-1.5 text-white/60 hover:text-white lg:hidden" onclick={() => (sidebarOpen = false)} aria-label="Close">✕</button>
@@ -153,16 +150,16 @@
         </button>
         <div class="flex-1">
           <p class="font-display text-sm font-bold tracking-widest">
-            {#if currentPath === '/dashboard'}GM, {(authState.user?.first_name ?? 'DEGEN').toUpperCase()} ▲
+            {#if currentPath === '/dashboard'}GM, {(authState.user?.first_name ?? 'INVESTOR').toUpperCase()} ▲
+            {:else if currentPath.includes('deposit')}DEPOSIT // FUND
+            {:else if currentPath.includes('external')}LINK // WALLETS
             {:else if currentPath.includes('wallets')}VAULT // WALLETS
-            {:else if currentPath.includes('markets')}TICKER // MARKETS
-            {:else if currentPath.includes('swap')}SWAP // ENGINE
             {:else if currentPath.includes('transactions')}ONCHAIN // ACTIVITY
             {:else}TERMINAL{/if}
           </p>
         </div>
         <span class="sticker hidden !text-[9px] sm:inline-block">LIVE PRICES</span>
-        <a href="/dashboard/swap" class="btn-primary !px-4 !py-2 !text-xs">SWAP ⇄</a>
+        <a href="/dashboard/deposit" class="btn-primary !px-4 !py-2 !text-xs">DEPOSIT $</a>
       </header>
 
       <main class="flex-1 px-4 py-6 pb-24 sm:px-6 lg:px-8 lg:pb-8">

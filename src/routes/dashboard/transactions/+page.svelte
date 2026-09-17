@@ -24,7 +24,7 @@
     t.type === 'received' ? '↓' : t.type === 'sent' ? '↑' : t.type === 'swap' ? '⇄' : t.type === 'buy' ? '+' : t.type === 'sell' ? '−' : '•';
 </script>
 
-<svelte:head><title>Onchain Feed — QGR Exchange</title></svelte:head>
+<svelte:head><title>Onchain Feed — QGR Investment</title></svelte:head>
 
 {#if loading}
   <div class="flex items-center justify-center py-32"><LoadingSpinner size="lg" /></div>

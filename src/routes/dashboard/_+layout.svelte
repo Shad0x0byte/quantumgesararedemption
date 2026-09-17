@@ -47,7 +47,7 @@
   <header class="lg:hidden bg-primary text-white p-4 flex items-center justify-between sticky top-0 z-40">
     <div class="flex items-center gap-2">
       <span class="text-xl">🏦</span>
-      <span class="font-bold">QGR Exchange</span>
+      <span class="font-bold">QGR Investment</span>
     </div>
     <button onclick={() => sidebarOpen = !sidebarOpen} class="text-white p-2">
       {#if sidebarOpen}
@@ -70,7 +70,7 @@
           <div class="w-10 h-10 bg-accent rounded-lg flex items-center justify-center">
             <span class="text-xl font-bold">🏦</span>
           </div>
-          <span class="font-bold text-xl">QGR Exchange</span>
+          <span class="font-bold text-xl">QGR Investment</span>
         </a>
         
         <!-- User Info -->

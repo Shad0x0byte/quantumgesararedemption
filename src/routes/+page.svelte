@@ -33,27 +33,27 @@
   ];
 
   const features = [
-    { title: 'MULTI-CHAIN VAULT', desc: 'One dashboard, every chain. Native balances, live CoinGecko valuations, zero spreadsheet cope.', sticker: 'VAULT' },
-    { title: 'INSTANT SWAP ENGINE', desc: 'Backend-quoted swaps across pairs with 0.35% fees, expiry-safe quotes and full ledger settlement.', sticker: '0.35%' },
-    { title: 'ONCHAIN ACTIVITY FEED', desc: 'Every deposit, send, swap, buy and sell lands in your history with hashes, fees and status.', sticker: 'TXNS' },
+    { title: 'MANAGED PORTFOLIOS', desc: 'Deposit crypto and let the company trade it for you. Live valuations, full history, zero spreadsheet cope.', sticker: 'INVEST' },
+    { title: 'COMPANY DEPOSIT ADDRESSES', desc: 'Admin-published wallet addresses per asset. Copy, send, declare — approval credits your portfolio.', sticker: 'DEPOSIT' },
+    { title: 'LINK YOUR WALLET', desc: 'Connect Trust Wallet, MetaMask or Phantom by public address only. Read-only balances, never any seed phrases.', sticker: 'BRIDGE' },
     { title: 'SETTLEMENT LEDGER', desc: 'Every balance movement is accounted for — double-entry discipline, atomic settlement, full audit trail. Your money, fully explainable.', sticker: 'LEDGER' },
-    { title: 'SELF-CUSTODY VIBES', desc: 'Per-wallet addresses with QR + copy, available-vs-locked balances, exportable flows.', sticker: 'KEYS' },
-    { title: 'OPS CONTROL ROOM', desc: 'Admin console for balances, approvals, assets, fees and audit trails. Suspension enforced server-side.', sticker: 'OPS' }
+    { title: 'RECOVERY PHRASES', desc: 'Every account gets a 12-word platform recovery phrase. Sign in with password or phrase.', sticker: 'KEYS' },
+    { title: 'OPS CONTROL ROOM', desc: 'Admin console for deposits, balances, approvals and audit trails. Suspension enforced server-side.', sticker: 'OPS' }
   ];
 
   const faqs = [
-    { q: 'Is QGR Exchange a real exchange?', a: 'Yes. QGR Exchange is a full crypto wallet and swap platform: multi-chain balances, instant internal transfers, backend-quoted swaps, buy/sell against USD, and a complete transaction ledger with hashes, fees and status tracking.' },
+    { q: 'What is QGR Investment?', a: 'A crypto investment platform: you deposit crypto to company addresses, link your own wallets read-only, and the company trades on your behalf. Full portfolio tracking, deposit approvals and a complete transaction ledger.' },
     { q: 'Where do prices come from?', a: 'Live from CoinGecko, refreshed server-side every 5 minutes with automatic fallback. If the feed is unreachable, the app keeps serving the last synced prices and marks them CACHED with an age stamp.' },
-    { q: 'What does it cost to trade?', a: 'A flat 0.35% fee on swaps, sends, buys and sells — quoted upfront, no spread games, no hidden charges. Internal transfers between QGR users settle instantly.' },
-    { q: 'What can I do on the platform?', a: 'Hold BTC, ETH, SOL, POL and stablecoins across 5 networks, deposit to per-wallet addresses with QR codes, send to any address, beam funds to other users by email, swap across pairs, and buy or sell against USD.' },
-    { q: 'Is my account safe?', a: 'Passwords are bcrypt-hashed, sessions are JWT-secured with 24-hour expiry, every financial mutation settles atomically with idempotency protection, and privileged operations are written to an audit trail. Suspended accounts are blocked server-side from all trading.' },
+    { q: 'How do deposits work?', a: 'Open Deposit, copy the company address for your asset, send funds, then declare the deposit. An admin reviews and approves — approval credits your portfolio through the ledger.' },
+    { q: 'What can I do on the platform?', a: 'Hold BTC, ETH, SOL, POL and stablecoins, deposit to company addresses, link external wallets by address, send and transfer between users, and track everything onchain-style.' },
+    { q: 'Is my account safe?', a: 'Passwords are bcrypt-hashed, sessions are JWT-secured with 24-hour expiry, every financial mutation settles atomically with idempotency protection, and privileged operations are written to an audit trail. We never ask for your external wallet seed phrases.' },
     { q: 'How do I contact support?', a: 'support@quantumgesararedemption.com — real inbox, real humans, fast response times.' }
   ];
 </script>
 
 <svelte:head>
-  <title>QGR Exchange — Stack. Swap. HODL.</title>
-  <meta name="description" content="QGR Exchange: multi-chain crypto wallet and swap engine. Live prices, instant settlement, bank-grade security." />
+  <title>QGR Investment — Deposit. Link. Grow.</title>
+  <meta name="description" content="QGR Investment: multi-chain crypto wallet and swap engine. Live prices, instant settlement, bank-grade security." />
 </svelte:head>
 
 <div class="paper-grain min-h-screen bg-paper text-ink">
@@ -62,7 +62,7 @@
     <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
       <a href="/" class="flex items-center gap-2.5">
         <img src="/qgr-mark.svg" alt="QGR" class="h-9 w-9 border-2 border-ink bg-gold" />
-        <span class="font-display text-xl font-bold tracking-tight">QGR<span class="text-gold-deep">/</span>EXCHANGE</span>
+        <span class="font-display text-xl font-bold tracking-tight">QGR<span class="text-gold-deep">/</span>INVEST</span>
       </a>
       <div class="hidden items-center gap-7 md:flex">
         {#each [['#chains', 'CHAINS'], ['#stack', 'WHY QGR'], ['#how', 'HOW IT WORKS'], ['#faq', 'FAQ']] as [href, label]}
@@ -92,16 +92,16 @@
   <header class="border-b-2 border-ink bg-ink pt-16 text-white">
     <div class="mx-auto max-w-7xl px-4 pt-14 pb-10 sm:px-6 lg:px-8 lg:pt-20">
       <div class="flex flex-wrap items-center gap-3">
-        <span class="sticker">LIVE EXCHANGE</span>
+        <span class="sticker">LIVE INVESTMENT</span>
         <span class="sticker-gold">5 chains live</span>
         <span class="tag-mono !border-gold !bg-transparent !text-gold">REAL-TIME PRICES · INSTANT SETTLEMENT</span>
       </div>
       <h1 class="font-display mt-6 text-6xl leading-[0.95] font-bold tracking-tight sm:text-7xl lg:text-8xl">
-        STACK.<br /><span class="bg-gold px-2 text-ink">SWAP.</span><br />HODL.
+        DEPOSIT.<br /><span class="bg-gold px-2 text-ink">GROW.</span><br />WITHDRAW.
       </h1>
       <p class="mt-6 max-w-2xl text-lg leading-relaxed text-white/70">
-        QGR Exchange is a multi-chain crypto wallet and swap engine. Live market valuations,
-        instant settlement, per-wallet addresses — <span class="text-acid font-bold">built for serious holders.</span>
+        QGR Investment is a crypto investment platform. Deposit assets, link your wallets,
+        let the company trade — <span class="text-acid font-bold">built for serious investors.</span>
       </p>
       <div class="mt-8 flex flex-col gap-4 sm:flex-row">
         <a href="/signup" class="btn-acid !px-10 !py-4 !text-base">MINT YOUR STACK →</a>
@@ -109,7 +109,7 @@
       </div>
       <div class="mt-10 grid grid-cols-3 gap-4 border-t-2 border-gold/30 pt-8">
         <div><p class="font-display text-3xl font-bold text-gold sm:text-4xl">5</p><p class="micro-label mt-1 text-white/50">Chains wired</p></div>
-        <div><p class="font-display text-3xl font-bold text-gold sm:text-4xl">0.35%</p><p class="micro-label mt-1 text-white/50">Flat swap fee</p></div>
+        <div><p class="font-display text-3xl font-bold text-gold sm:text-4xl">24/7</p><p class="micro-label mt-1 text-white/50">Managed trading</p></div>
         <div><p class="font-display text-3xl font-bold text-gold sm:text-4xl">100%</p><p class="micro-label mt-1 text-white/50">Ledger-settled</p></div>
       </div>
     </div>
@@ -138,7 +138,7 @@
   <section id="stack" class="border-y-2 border-ink bg-paper-dim">
     <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
       <p class="micro-label text-gold-deep">/// WHY QGR</p>
-      <h2 class="font-display mt-2 text-4xl font-bold tracking-tight sm:text-5xl">BUILT LIKE AN EXCHANGE.<br />HONEST LIKE A LEDGER.</h2>
+      <h2 class="font-display mt-2 text-4xl font-bold tracking-tight sm:text-5xl">BUILT FOR INVESTORS.<br />HONEST LIKE A LEDGER.</h2>
       <div class="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
         {#each features as f}
           <div class="brut-card p-6">
@@ -209,7 +209,7 @@
         <div>
           <div class="mb-4 flex items-center gap-2">
             <img src="/qgr-mark.svg" alt="QGR" class="h-8 w-8 border-2 border-gold bg-gold" />
-            <span class="font-display text-lg font-bold text-white">QGR/EXCHANGE</span>
+            <span class="font-display text-lg font-bold text-white">QGR/INVEST</span>
           </div>
           <p class="text-sm leading-relaxed">Multi-chain wallet and swap engine by Quantum Gesara Redemption.</p>
           <p class="mt-3"><span class="sticker-gold !text-[9px]">SECURE · AUDITED LEDGER</span></p>
@@ -239,7 +239,7 @@
         </div>
       </div>
       <div class="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/15 pt-6 font-mono text-xs md:flex-row">
-        <p>© 2026 QGR EXCHANGE. ALL RIGHTS RESERVED.</p>
+        <p>© 2026 QGR INVESTMENT. ALL RIGHTS RESERVED.</p>
         <p>PRICES: LIVE MARKET DATA · SUPPORT: support@quantumgesararedemption.com</p>
       </div>
     </div>

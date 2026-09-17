@@ -8,19 +8,19 @@
       <div class="flex items-center gap-2.5">
         <img src="/qgr-mark.svg" alt="QGR" class="h-8 w-8 border-2 border-gold bg-gold" />
         <div>
-          <p class="font-display text-sm font-bold text-white">QGR/EXCHANGE</p>
-          <p class="font-mono text-[11px] text-gold">STACK · SWAP · HODL</p>
+          <p class="font-display text-sm font-bold text-white">QGR/INVEST</p>
+          <p class="font-mono text-[11px] text-gold">DEPOSIT · LINK · GROW</p>
         </div>
       </div>
       <nav class="flex flex-wrap justify-center gap-x-5 gap-y-2 font-display text-xs font-bold tracking-widest">
-        {#each [['STACK', '/dashboard'], ['VAULT', '/dashboard/wallets'], ['SWAP', '/dashboard/swap'], ['TICKER', '/dashboard/markets'], ['ONCHAIN', '/dashboard/transactions']] as [label, href]}
+        {#each [['STACK', '/dashboard'], ['DEPOSIT', '/dashboard/deposit'], ['LINK WALLET', '/dashboard/external'], ['VAULT', '/dashboard/wallets'], ['ONCHAIN', '/dashboard/transactions']] as [label, href]}
           <a {href} class="hover:bg-acid hover:text-ink hover:px-1">{label}</a>
         {/each}
       </nav>
       <span class="sticker-gold !text-[9px]">SECURE LEDGER</span>
     </div>
     <div class="mt-6 flex flex-col items-center gap-2 border-t border-white/15 pt-6 font-mono text-[11px] sm:flex-row sm:justify-between">
-      <p>© {year} QGR EXCHANGE. ALL RIGHTS RESERVED.</p>
+      <p>© {year} QGR INVESTMENT. ALL RIGHTS RESERVED.</p>
       <p>LIVE MARKET DATA · SUPPORT: support@quantumgesararedemption.com</p>
     </div>
   </div>

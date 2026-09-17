@@ -98,7 +98,7 @@
 </script>
 
 <svelte:head>
-	<title>Settings - QGR Exchange</title>
+	<title>Settings - QGR Investment</title>
 </svelte:head>
 
 <div>
