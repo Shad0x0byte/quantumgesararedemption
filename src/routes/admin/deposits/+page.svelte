@@ -102,8 +102,9 @@
       <div class="mt-3 space-y-2">
         {#each addrs as a}
           <div class="flex flex-wrap items-center gap-2 border-2 border-ink bg-paper p-2 font-mono text-xs">
-            <span class="font-bold">{a.asset}/{a.network}</span>
-            <span class="min-w-0 flex-1 truncate">{a.address}</span>
+            <span class="border border-ink bg-gold px-1.5 py-0.5 font-bold">{a.asset}</span>
+            <span class="border border-ink/40 bg-white px-1.5 py-0.5 text-ink/70">NET: {a.network}</span>
+            <span class="min-w-0 flex-1 break-all">{a.address}</span>
             <span class={a.active ? 'font-bold text-up' : 'font-bold text-blood'}>{a.active ? 'LIVE' : 'OFF'}</span>
             <button onclick={() => editAddr(a)} class="border border-ink bg-white px-2 py-0.5 font-bold hover:bg-gold">EDIT</button>
             <button onclick={() => removeAddr(a)} class="border border-blood px-2 py-0.5 font-bold text-blood hover:bg-blood hover:text-white">DELETE</button>
@@ -115,9 +116,15 @@
       <p class="mt-3 font-mono text-xs font-bold text-gold-deep">EDITING {editing.asset}/{editing.network} — <button onclick={resetAddrForm} class="underline">cancel</button></p>
     {/if}
     <div class="mt-4 grid gap-3 md:grid-cols-4">
-      <input bind:value={aAsset} class="input-base font-mono" placeholder="ASSET e.g. ETH" />
-      <input bind:value={aNetwork} class="input-base font-mono" placeholder="NETWORK e.g. ETH" />
-      <input bind:value={aAddress} class="input-base font-mono md:col-span-1" placeholder="0x… / bc1…" />
+      <input bind:value={aAsset} list="qgr-assets" class="input-base font-mono" placeholder="ASSET e.g. ETH" />
+      <input bind:value={aNetwork} list="qgr-networks" class="input-base font-mono" placeholder="NETWORK e.g. ETH" />
+      <datalist id="qgr-assets">
+        {#each ['BTC','ETH','USDT','USDC','SOL','BNB','XRP','DOGE','ADA','TRX','AVAX','LINK','DOT','LTC','BCH','NEAR','UNI','ATOM','XLM','ETC','POL'] as s}<option value={s}></option>{/each}
+      </datalist>
+      <datalist id="qgr-networks">
+        {#each ['BTC','ETH','SOL','BNB','XRP','DOGE','ADA','TRX','AVAX','POL','BASE','DOT','LTC','BCH','NEAR','ATOM','XLM','ETC'] as n}<option value={n}></option>{/each}
+      </datalist>
+      <input bind:value={aAddress} class="input-base font-mono md:col-span-1" placeholder="Wallet address: 0x… / bc1…" />
       <label class="flex items-center gap-2 font-mono text-xs font-bold"><input type="checkbox" bind:checked={aActive} class="h-4 w-4 border-2 border-ink" /> ACTIVE</label>
     </div>
     <button onclick={saveAddr} disabled={aBusy} class="btn-primary mt-4">{aBusy ? 'SAVING…' : editing ? 'UPDATE ADDRESS →' : 'SAVE ADDRESS →'}</button>

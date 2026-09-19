@@ -14,6 +14,12 @@
   let busy = false;
   let formError = '';
 
+  // Auto-match the network to the selected asset's published address
+  $: matchForAsset = addresses.find((a) => a.asset === asset);
+  $: if (matchForAsset && network !== matchForAsset.network && !addresses.some((a) => a.asset === asset && a.network === network)) {
+    network = matchForAsset.network;
+  }
+
   async function refresh() {
     loading = true;
     const res = await getDepositAddresses();
@@ -90,8 +96,11 @@
         </select>
       </div>
       <div>
-        <label class="micro-label" for="dep-net">NETWORK</label>
-        <input id="dep-net" bind:value={network} class="input-base mt-1 font-mono" placeholder="ETH" />
+        <label class="micro-label" for="dep-net">NETWORK (MUST MATCH THE ADDRESS ABOVE)</label>
+        <input id="dep-net" bind:value={network} list="qgr-dep-networks" class="input-base mt-1 font-mono" placeholder="ETH" />
+        <datalist id="qgr-dep-networks">
+          {#each [...new Set(addresses.map((a) => a.network))] as n}<option value={n} />{/each}
+        </datalist>
       </div>
       <div>
         <label class="micro-label" for="dep-amt">AMOUNT SENT</label>

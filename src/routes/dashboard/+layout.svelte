@@ -43,7 +43,16 @@
     redirectUnsubscribe();
   });
 
-  $: currentPath = $page.url.pathname.replace(/\/$/, '') || '/dashboard';
+  $: userName = authState.user ? `${authState.user.first_name ?? ''} ${authState.user.last_name ?? ''}`.trim() : '';
+  $: userEmail = authState.user?.email ?? '';
+  $: initials = userName ? userName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) : 'QG';
+
+  function navActive(href: string) {
+    const path = ($page.url.pathname || '/dashboard').replace(/\/$/, '') || '/dashboard';
+    const target = href.replace(/\/$/, '') || '/dashboard';
+    if (target === '/dashboard') return path === '/dashboard';
+    return path === target || path.startsWith(target + '/');
+  }
 
   const navItems: NavItem[] = [
     { href: '/dashboard', label: 'OVERVIEW', icon: '▦' },
@@ -61,20 +70,10 @@
     { href: '/dashboard/external', label: 'LINK', icon: '🔗' }
   ];
 
-  function isActive(href: string) {
-    const normalizedHref = href.replace(/\/$/, '') || '/dashboard';
-    if (normalizedHref === '/dashboard') return currentPath === '/dashboard';
-    return currentPath.startsWith(normalizedHref);
-  }
-
   async function handleSignOut() {
     auth.clearAuth();
     goto('/login');
   }
-
-  $: userName = authState.user ? `${authState.user.first_name ?? ''} ${authState.user.last_name ?? ''}`.trim() : '';
-  $: userEmail = authState.user?.email ?? '';
-  $: initials = userName ? userName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) : 'QG';
 </script>
 
 {#if authState.loading}
@@ -107,14 +106,14 @@
               <a
                 href={item.href}
                 onclick={() => (sidebarOpen = false)}
-                aria-current={isActive(item.href) ? 'page' : undefined}
-                class="flex items-center gap-3 border-2 px-3 py-2.5 font-display text-sm font-bold tracking-widest transition-all {isActive(item.href)
+                aria-current={navActive(item.href) ? 'page' : undefined}
+                class="flex items-center gap-3 border-2 px-3 py-2.5 font-display text-sm font-bold tracking-widest transition-all {navActive(item.href)
                   ? 'border-gold bg-gold text-ink'
                   : 'border-transparent text-white/60 hover:border-white/30 hover:text-white'}"
               >
                 <span class="w-5 text-center">{item.icon}</span>
                 {item.label}
-                {#if isActive(item.href)}<span class="ml-auto font-mono text-[10px]">◀</span>{/if}
+                {#if navActive(item.href)}<span class="ml-auto font-mono text-[10px]">◀</span>{/if}
               </a>
             </li>
           {/each}
@@ -150,11 +149,10 @@
         </button>
         <div class="flex-1">
           <p class="font-display text-sm font-bold tracking-widest">
-            {#if currentPath === '/dashboard'}Hello, {(authState.user?.first_name ?? 'INVESTOR').toUpperCase()}
-            {:else if currentPath.includes('deposit')}DEPOSIT // FUND
-            {:else if currentPath.includes('external')}LINK // WALLETS
-            {:else if currentPath.includes('wallets')}MY WALLETS
-            {:else if currentPath.includes('transactions')}RECENT ACTIVITY
+            {#if navActive('/dashboard') && $page.url.pathname.replace(/\/$/, '') === '/dashboard'}Hello, {(authState.user?.first_name ?? 'INVESTOR').toUpperCase()}
+            {:else if $page.url.pathname.includes('deposit')}DEPOSIT // FUND
+            {:else if $page.url.pathname.includes('external')}LINK // WALLETS
+            {:else if $page.url.pathname.includes('wallets')}MY WALLETS
             {:else}TERMINAL{/if}
           </p>
         </div>
@@ -176,7 +174,7 @@
     <nav class="fixed inset-x-0 bottom-0 z-40 border-t-2 border-ink bg-ink lg:hidden">
       <div class="safe-bottom flex items-stretch">
         {#each mobileNavItems as item}
-          <a href={item.href} class="flex flex-1 flex-col items-center justify-center gap-0.5 py-2.5 {isActive(item.href) ? 'bg-gold text-ink' : 'text-white/50'}">
+          <a href={item.href} class="flex flex-1 flex-col items-center justify-center gap-0.5 py-2.5 {navActive(item.href) ? 'bg-gold text-ink' : 'text-white/50'}">
             <span class="text-base leading-none">{item.icon}</span>
             <span class="font-display text-[9px] font-bold tracking-widest">{item.label}</span>
           </a>

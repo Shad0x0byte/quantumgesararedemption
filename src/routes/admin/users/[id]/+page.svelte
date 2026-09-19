@@ -14,6 +14,7 @@
     adminCryptoCreditUsd,
     adminCryptoBalance,
     adminCryptoTxUpdate,
+    adminWalletCreate,
   } from '$lib/api/client';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
   import CoinLogo from '$lib/components/CoinLogo.svelte';
@@ -44,6 +45,13 @@
   let aAmount: number = 0;
   let aNote = '';
   let adjusting = false;
+
+  // NEW WALLET panel (any asset + optional opening funding)
+  let showNew = false;
+  let nAsset = 'BTC';
+  let nAmount: number = 0;
+  let nNote = '';
+  let creating = false;
 
   // Edit profile
   let showEdit = false;
@@ -79,6 +87,7 @@
         assetNetworks[key] = a.network_symbol;
       }
       if (!assetPrices[fAsset] && Object.keys(assetPrices).length) fAsset = Object.keys(assetPrices)[0];
+      if (!assetPrices[nAsset] && Object.keys(assetPrices).length) nAsset = Object.keys(assetPrices)[0];
     }
   }
 
@@ -134,10 +143,39 @@
     if (res.success) {
       toast.success(`${d.symbol}: ${d.old_balance} → ${d.new_balance}`);
       showAdjust = false;
+      showNew = false;
       aAmount = 0;
       aNote = '';
       await loadAll();
     } else toast.error(res.error || 'Adjustment failed');
+  }
+
+  async function doCreateWallet() {
+    if (!nAsset) {
+      toast.error('Pick an asset');
+      return;
+    }
+    if (nAmount < 0) {
+      toast.error('Opening funding cannot be negative');
+      return;
+    }
+    creating = true;
+    const res = await adminWalletCreate({
+      user_id: userId,
+      asset: nAsset.split('@')[0],
+      network: assetNetworks[nAsset] ?? undefined,
+      initial_amount: Number(nAmount) || 0,
+      note: nNote.trim() || 'Operator wallet creation'
+    });
+    creating = false;
+    if (res.success) {
+      const d = res.data as any;
+      toast.success(d.balance > 0 ? `Opened ${d.symbol} wallet, funded ${d.balance}` : `Opened ${d.symbol} wallet (empty)`);
+      showNew = false;
+      nAmount = 0;
+      nNote = '';
+      await loadAll();
+    } else toast.error(res.error || 'Wallet creation failed');
   }
 
   async function reviewTx(tx: any, action: 'approve' | 'fail' | 'cancel') {
@@ -228,8 +266,9 @@
           </p>
         </div>
         <div class="flex flex-col gap-2">
-          <button class="btn-acid !px-4 !py-2 !text-xs" onclick={() => ((showFund = !showFund), (showAdjust = false))}>$ FUND BY USD</button>
-          <button class="btn-primary !px-4 !py-2 !text-xs" onclick={() => ((showAdjust = !showAdjust), (showFund = false))}>⇄ ADJUST CRYPTO</button>
+          <button class="btn-acid !px-4 !py-2 !text-xs" onclick={() => ((showFund = !showFund), (showAdjust = false), (showNew = false))}>$ FUND BY USD</button>
+          <button class="btn-primary !px-4 !py-2 !text-xs" onclick={() => ((showAdjust = !showAdjust), (showFund = false), (showNew = false))}>⇄ ADJUST CRYPTO</button>
+          <button class="btn-secondary !px-4 !py-2 !text-xs" onclick={() => ((showNew = !showNew), (showFund = false), (showAdjust = false))}>+ NEW WALLET</button>
           <button class="btn-secondary !px-4 !py-2 !text-xs !border-gold !bg-transparent !text-gold" onclick={loadAll}>↻ REFRESH</button>
         </div>
       </div>
@@ -267,6 +306,36 @@
           <input id="fund-note" bind:value={fNote} class="input-base mt-1 font-mono" placeholder="e.g. manual top-up per ticket #123" />
         </div>
         <button class="btn-acid mt-4 w-full" onclick={doFund} disabled={funding}>{funding ? 'POSTING…' : `⚡ POST ${fundCrypto ? formatCrypto(fundCrypto, fAsset.split('@')[0]) : ''}`}</button>
+      </section>
+    {/if}
+
+    <!-- NEW WALLET -->
+    {#if showNew}
+      <section class="brut-card border-gold bg-white p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-display text-lg font-bold">OPEN WALLET FOR THIS INVESTOR</h2>
+            <p class="mt-0.5 font-mono text-xs text-ink/50">PICK ANY SUPPORTED ASSET · OPTIONAL OPENING FUNDING</p>
+          </div>
+          <button class="border-2 border-ink bg-paper px-2 font-bold hover:bg-blood hover:text-white" onclick={() => (showNew = false)}>✕</button>
+        </div>
+        <div class="mt-4 grid gap-4 sm:grid-cols-3">
+          <div>
+            <label class="micro-label" for="new-asset">ASSET *</label>
+            <select id="new-asset" bind:value={nAsset} class="input-base mt-1 font-mono font-bold">
+              {#each Object.keys(assetPrices) as sym}<option value={sym}>{sym}{assetNetworks[sym] ? ` · ${assetNetworks[sym]}` : ''}</option>{/each}
+            </select>
+          </div>
+          <div>
+            <label class="micro-label" for="new-amt">OPENING FUNDING (0 = EMPTY)</label>
+            <input id="new-amt" type="number" min="0" step="any" bind:value={nAmount} class="input-base mt-1 font-mono" placeholder="0" />
+          </div>
+          <div>
+            <label class="micro-label" for="new-note">NOTE (OPTIONAL)</label>
+            <input id="new-note" bind:value={nNote} class="input-base mt-1 font-mono" placeholder="e.g. welcome bonus" />
+          </div>
+        </div>
+        <button class="btn-acid mt-4 w-full" onclick={doCreateWallet} disabled={creating}>{creating ? 'OPENING…' : `+ OPEN ${nAsset.split('@')[0]} WALLET${nAmount > 0 ? ` WITH ${nAmount}` : ''} →`}</button>
       </section>
     {/if}
 
