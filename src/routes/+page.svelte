@@ -34,12 +34,12 @@
   ];
 
   const features = [
-    { title: 'MANAGED PORTFOLIOS', desc: 'Deposit crypto and let the company trade it for you. Live valuations, full history, no spreadsheets needed.', sticker: 'INVEST' },
-    { title: 'COMPANY DEPOSIT ADDRESSES', desc: 'Admin-published wallet addresses per asset. Copy, send, declare — approval credits your portfolio.', sticker: 'DEPOSIT' },
-    { title: 'LINK YOUR WALLET', desc: 'Connect Trust Wallet, MetaMask or Phantom by public address only. Read-only balances, never any seed phrases.', sticker: 'BRIDGE' },
-    { title: 'SETTLEMENT LEDGER', desc: 'Every balance movement is accounted for — double-entry discipline, atomic settlement, full audit trail. Your money, fully explainable.', sticker: 'LEDGER' },
-    { title: 'RECOVERY PHRASES', desc: 'Every account gets a 12-word platform recovery phrase. Sign in with password or phrase.', sticker: 'KEYS' },
-    { title: 'OPS CONSOLE', desc: 'Admin console for deposits, balances, approvals and audit trails. Suspension enforced server-side.', sticker: 'OPS' }
+    { title: 'UNLEASH YOUR POTENTIAL', desc: 'Dive deep into the infinite possibilities that await you. Our resources and insights empower you to unlock your true potential and embrace the changes on the horizon.', plain: 'Plainly: live portfolio tracking, market insights, and a 12-word recovery phrase so you never lose access.', sticker: 'POTENTIAL' },
+    { title: 'FORTIFY YOUR FUTURE', desc: 'Navigate the new financial landscape with confidence. Discover innovative strategies and secure platforms designed to protect your assets and ensure your financial well-being.', plain: 'Plainly: deposits to company addresses, managed trading, and every movement settled on a double-entry ledger.', sticker: 'SECURITY' },
+    { title: 'JOIN A THRIVING COMMUNITY', desc: 'Connect with a vibrant network of like-minded visionaries who share your passion for growth and exploration. Together, we forge new pathways and elevate our collective consciousness.', plain: 'Plainly: investor stories, 24/7 help-desk chat, and support that answers in minutes.', sticker: 'COMMUNITY' },
+    { title: 'COMPANY DEPOSIT ADDRESSES', desc: 'Admin-published wallet addresses per asset. Copy, send, declare — approval credits your portfolio.', plain: '', sticker: 'DEPOSIT' },
+    { title: 'LINK YOUR WALLET', desc: 'Connect Trust Wallet, MetaMask or Phantom by public address only. Read-only balances, never any seed phrases.', plain: '', sticker: 'BRIDGE' },
+    { title: 'RECOVERY PHRASES', desc: 'Every account gets a 12-word platform recovery phrase. Sign in with password or phrase.', plain: '', sticker: 'KEYS' }
   ];
 
   const faqs = [
@@ -53,7 +53,7 @@
 </script>
 
 <svelte:head>
-  <title>QGR Investment — Deposit. Link. Grow.</title>
+  <title>QuantumGesararedemption.com — Quantum Potential × Web 3.0 Investing</title>
   <meta name="description" content="QGR Investment: multi-chain crypto wallet and swap engine. Live prices, instant settlement, bank-grade security." />
 </svelte:head>
 
@@ -94,16 +94,23 @@
   <header class="border-b-2 border-ink bg-ink pt-16 text-white">
     <div class="mx-auto max-w-7xl px-4 pt-14 pb-10 sm:px-6 lg:px-8 lg:pt-20">
       <div class="flex flex-wrap items-center gap-3">
-        <span class="sticker">LIVE INVESTMENT</span>
-        <span class="sticker-gold">5 chains live</span>
-        <span class="tag-mono !border-gold !bg-transparent !text-gold">REAL-TIME PRICES · INSTANT SETTLEMENT</span>
+        <span class="sticker">QUANTUM × WEB 3.0</span>
+        <span class="sticker-gold">LIVE INVESTMENT</span>
+        <span class="tag-mono !border-gold !bg-transparent !text-gold">REAL-TIME PRICES · SECURE LEDGER</span>
       </div>
-      <h1 class="font-display mt-6 text-6xl leading-[0.95] font-bold tracking-tight sm:text-7xl lg:text-8xl">
-        DEPOSIT.<br /><span class="bg-gold px-2 text-ink">GROW.</span><br />WITHDRAW.
+      <h1 class="font-display mt-6 text-4xl leading-[1.02] font-bold tracking-tight sm:text-6xl lg:text-7xl">
+        Welcome to<br />QuantumGesararedemption.com
       </h1>
-      <p class="mt-6 max-w-2xl text-lg leading-relaxed text-white/70">
-        QGR Investment is a crypto investment platform. Deposit assets, link your wallets,
-        let the company trade — <span class="text-acid font-bold">built for serious investors.</span>
+      <p class="mt-6 max-w-2xl text-lg leading-relaxed text-white/80">
+        Where the extraordinary realms of quantum potential and the revolutionary
+        innovations of Web 3.0 converge — crafting an unparalleled journey of
+        <span class="text-gold font-bold">self-discovery, empowerment, and collective evolution.</span>
+      </p>
+      <p class="mt-4 max-w-2xl leading-relaxed text-white/70">
+        We invite you to embark on a transformative adventure that transcends
+        traditional boundaries — harnessing limitless possibilities to illuminate
+        your path toward a brighter future.
+        <span class="text-acid font-bold">In plain terms: you deposit crypto, our team trades it for you — secured, tracked, withdrawable.</span>
       </p>
       <div class="mt-8 flex flex-col gap-4 sm:flex-row">
         <a href="/signup" class="btn-acid w-full !px-10 !py-4 !text-base sm:w-auto">CREATE YOUR ACCOUNT →</a>
@@ -117,6 +124,19 @@
     </div>
     <Ticker />
   </header>
+
+  <!-- VISION -->
+  <section class="border-b-2 border-ink bg-paper">
+    <div class="mx-auto max-w-5xl px-4 py-14 text-center sm:px-6 lg:px-8">
+      <p class="micro-label text-gold-deep">/// THE VISION</p>
+      <p class="font-display mt-4 text-2xl leading-snug font-bold tracking-tight sm:text-3xl">
+        A journey of <span class="bg-gold px-1">self-discovery</span>,
+        <span class="bg-gold px-1">empowerment</span>, and
+        <span class="bg-gold px-1">collective evolution</span> — powered by quantum
+        technology and the decentralized promise of Web 3.0.
+      </p>
+    </div>
+  </section>
 
   <!-- CHAINS -->
   <section id="chains" class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
@@ -139,14 +159,15 @@
   <!-- WHY -->
   <section id="why" class="border-y-2 border-ink bg-paper-dim">
     <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-      <p class="micro-label text-gold-deep">/// WHY QGR</p>
-      <h2 class="font-display mt-2 text-4xl font-bold tracking-tight sm:text-5xl">BUILT FOR INVESTORS.<br />HONEST LIKE A LEDGER.</h2>
+      <p class="micro-label text-gold-deep">/// WHY QUANTUMGESARA REDEMPTION</p>
+      <h2 class="font-display mt-2 text-4xl font-bold tracking-tight sm:text-5xl">YOUR TRANSFORMATION<br />BEGINS HERE.</h2>
       <div class="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
         {#each features as f}
           <div class="brut-card p-6">
             <span class="sticker">{f.sticker}</span>
             <h3 class="font-display mt-4 text-lg font-bold tracking-tight">{f.title}</h3>
             <p class="mt-2 text-sm leading-relaxed text-ink/70">{f.desc}</p>
+            {#if f.plain}<p class="mt-3 border-t-2 border-ink/10 pt-3 font-mono text-xs leading-relaxed text-gold-deep">{f.plain}</p>{/if}
           </div>
         {/each}
       </div>
@@ -242,8 +263,8 @@
   <!-- CTA -->
   <section class="border-t-2 border-ink bg-gold">
     <div class="mx-auto max-w-4xl px-4 py-14 text-center sm:px-6">
-      <h2 class="font-display text-4xl font-bold tracking-tight sm:text-5xl">READY TO PUT CAPITAL TO WORK?</h2>
-      <p class="mx-auto mt-3 max-w-xl font-medium text-ink/70">Free account. Recovery phrase included. Live portfolio from day one.</p>
+      <h2 class="font-display text-4xl font-bold tracking-tight sm:text-5xl">YOUR JOURNEY OF TRANSFORMATION BEGINS HERE.</h2>
+      <p class="mx-auto mt-4 max-w-2xl font-medium text-ink/70">Step into a world where possibilities are limitless, and let us guide you toward a future filled with promise and potential. Free account. Recovery phrase included. Live portfolio from day one.</p>
       <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
         <a href="/signup" class="inline-flex w-full items-center justify-center gap-2 border-2 border-ink bg-ink px-10 py-4 font-display text-base font-bold tracking-wider text-white hover:bg-ink-soft sm:w-auto" style="box-shadow: 4px 4px 0 #f4f1ea;">CREATE ACCOUNT</a>
         <a href="/login" class="inline-flex w-full items-center justify-center gap-2 border-2 border-ink bg-paper px-10 py-4 font-display text-base font-bold tracking-wider hover:bg-white sm:w-auto" style="box-shadow: 4px 4px 0 #0b132b;">LOG IN</a>
@@ -260,7 +281,7 @@
             <img src="/qgr-mark.svg" alt="QGR" class="h-8 w-8 border-2 border-gold bg-gold" />
             <span class="font-display text-lg font-bold text-white">QGR/INVEST</span>
           </div>
-          <p class="text-sm leading-relaxed">Crypto investment management by Quantum Gesara Redemption — deposits, managed trading, web3 support.</p>
+          <p class="text-sm leading-relaxed">Quantum potential × Web 3.0 — crypto investment management by Quantum Gesara Redemption.</p>
           <p class="mt-3"><span class="sticker-gold !text-[9px]">SECURE · AUDITED LEDGER</span></p>
         </div>
         <div>
