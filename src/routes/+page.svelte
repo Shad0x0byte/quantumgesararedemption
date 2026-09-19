@@ -98,8 +98,8 @@
         <span class="sticker-gold">LIVE INVESTMENT</span>
         <span class="tag-mono !border-gold !bg-transparent !text-gold">REAL-TIME PRICES · SECURE LEDGER</span>
       </div>
-      <h1 class="font-display mt-6 text-4xl leading-[1.02] font-bold tracking-tight sm:text-6xl lg:text-7xl">
-        Welcome to<br />QuantumGesararedemption.com
+      <h1 class="font-display mt-6 text-6xl leading-[0.95] font-bold tracking-tight sm:text-7xl lg:text-8xl">
+        Welcome<br />to <span class="bg-gold px-2 text-ink">QGR.</span>
       </h1>
       <p class="mt-6 max-w-2xl text-lg leading-relaxed text-white/80">
         Where the extraordinary realms of quantum potential and the revolutionary
